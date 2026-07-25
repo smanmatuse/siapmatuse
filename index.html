@@ -1174,9 +1174,32 @@
   <script>
 
     // ============================================================
-    // ============ GITHUB PAGES REST API BRIDGE ==================
+    // ============ GITHUB PAGES FAST REST API BRIDGE ============
     // ============================================================
     const API_URL = 'https://script.google.com/macros/s/AKfycbzvvGwTfiqfSUu-HbY2eU2eZiob0iq_pGYnWSnBebbwVFzqlCwW4_i3N_nXvmkecHR7Bw/exec';
+
+    // ============================================================
+    // ============ BROWSER CACHE HELPER (5 Menit) ================
+    // ============================================================
+    const AppCache = {
+      set: function(key, data, ttlMinutes) {
+        const ttl = (ttlMinutes || 5) * 60 * 1000;
+        const item = { data: data, expiry: Date.now() + ttl };
+        try { sessionStorage.setItem('appcache_' + key, JSON.stringify(item)); } catch(e) { /* Abaikan jika sessionStorage penuh */ }
+      },
+      get: function(key) {
+        try {
+          const raw = sessionStorage.getItem('appcache_' + key);
+          if (!raw) return null;
+          const item = JSON.parse(raw);
+          if (Date.now() > item.expiry) { sessionStorage.removeItem('appcache_' + key); return null; }
+          return item.data;
+        } catch(e) { return null; }
+      },
+      clear: function(key) {
+        try { sessionStorage.removeItem('appcache_' + key); } catch(e) { /* Abaikan */ }
+      }
+    };
 
     if (typeof google === 'undefined') { var google = {}; }
     if (!google.script) { google.script = {}; }
@@ -1196,11 +1219,21 @@
               };
             }
             return function (...args) {
-              fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: prop, args: args })
-              })
+              const argsJson = JSON.stringify(args);
+              // Gunakan HTTP GET secara default untuk kecepatan maksimal tanpa 302 POST redirect
+              let fetchPromise;
+              if (argsJson.length < 1500) {
+                const getUrl = `${API_URL}?action=${encodeURIComponent(prop)}&args=${encodeURIComponent(argsJson)}`;
+                fetchPromise = fetch(getUrl, { method: 'GET' });
+              } else {
+                fetchPromise = fetch(API_URL, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                  body: JSON.stringify({ action: prop, args: args })
+                });
+              }
+
+              fetchPromise
                 .then(res => res.json())
                 .then(data => {
                   if (typeof successFn === 'function') {
@@ -1375,6 +1408,11 @@
     // ============================================================
     document.addEventListener('DOMContentLoaded', function () {
       initializeApp();
+      // WARM-UP PING: Bangunkan container GAS di background agar siap saat user klik Login
+      setTimeout(function() {
+        fetch(API_URL + '?action=ping', { method: 'GET' })
+          .catch(function() {}); // Abaikan error
+      }, 500);
     });
 
 
@@ -7059,12 +7097,20 @@
         return;
       }
 
+      // Cek cache browser dulu (TTL 5 menit)
+      const cached = AppCache.get('dashboardKehadiran');
+      if (cached) {
+        tampilkanDashboardPimpinan(cached);
+        return;
+      }
+
       showLoading(true, 'Memuat Dasbor Kehadiran...');
 
       google.script.run
         .withSuccessHandler(function (r) {
           showLoading(false);
           if (r.success) {
+            AppCache.set('dashboardKehadiran', r, 5); // Simpan 5 menit
             tampilkanDashboardPimpinan(r);
           } else {
             showError('Gagal memuat dasbor: ' + r.error);
