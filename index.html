@@ -1165,8 +1165,14 @@
         </div>
         <div style="margin-bottom:25px; text-align:left;">
           <label style="display:block; font-weight:600; margin-bottom:5px; font-size:14px; color:#333;">Password</label>
-          <input type="password" id="loginPassword" required
-            style="width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; font-size:15px;" />
+          <div style="position:relative;">
+            <input type="password" id="loginPassword" required
+              style="width:100%; padding:12px; padding-right:45px; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; font-size:15px;" />
+            <button type="button" onclick="togglePasswordVisibility(this)" aria-label="Lihat Password"
+              style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:18px; color:#666; padding:4px; display:flex; align-items:center; justify-content:center;">
+              👁️
+            </button>
+          </div>
         </div>
         <button type="submit" id="loginBtn"
           style="width:100%; background:#2e7d32; color:white; border:none; padding:14px; border-radius:6px; font-weight:600; cursor:pointer; font-size:15px; margin-bottom:15px; transition:background 0.2s;">Masuk
@@ -6823,7 +6829,7 @@
       const html = `
     <div class="form-section">
       <h3>👋 HALO, ${profil.nama}</h3>
-      <p>Lihat laporan perkembangan putra/putri Anda di sini.</p>
+      <p style="margin-bottom: 20px; color: #555; font-size: 14px;">Lihat laporan perkembangan putra/putri Anda di sini.</p>
       
       <div class="form-grid">
         <div class="form-group">
@@ -7689,6 +7695,19 @@
     // ============================================================
     // ============ FUNGSI AUTH (LOGIN / LOGOUT / PASSWORD) =======
     // ============================================================
+    function togglePasswordVisibility(btn) {
+      const passInput = document.getElementById('loginPassword');
+      if (passInput) {
+        if (passInput.type === 'password') {
+          passInput.type = 'text';
+          if (btn) btn.textContent = '🙈';
+        } else {
+          passInput.type = 'password';
+          if (btn) btn.textContent = '👁️';
+        }
+      }
+    }
+
     function handleLogin(event) {
       event.preventDefault();
       const user = document.getElementById('loginUsername').value.trim();
