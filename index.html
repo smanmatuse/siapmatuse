@@ -31,13 +31,14 @@
 
     /* ===== HEADER ===== */
     .header {
-      background: #1b5e20;
+      background: linear-gradient(135deg, #0a2e0c 0%, #1b5e20 40%, #2e7d32 100%);
       color: white;
-      padding: 15px 20px;
+      padding: 16px 22px;
       display: flex;
       align-items: center;
       gap: 15px;
-      border-bottom: 2px solid #124015;
+      border-bottom: 3px solid #2e7d32;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
       z-index: 200;
     }
 
@@ -52,6 +53,7 @@
       border: 2px solid #ffd700;
       overflow: hidden;
       flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
     .logo img {
@@ -65,22 +67,26 @@
     }
 
     .title h1 {
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       margin: 0;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
 
     .title p {
-      font-size: 0.9rem;
-      margin: 5px 0 0 0;
-      opacity: 0.9;
+      font-size: 0.88rem;
+      margin: 4px 0 0 0;
+      opacity: 0.92;
+      font-weight: 500;
     }
 
     /* ===== HAMBURGER BUTTON (semua layar) ===== */
     .hamburger-btn {
       display: flex;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
       color: white;
       font-size: 22px;
       width: 42px;
@@ -89,11 +95,12 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      transition: background 0.2s;
+      transition: all 0.25s ease;
     }
 
     .hamburger-btn:hover {
-      background: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
     }
 
     /* ===== OVERLAY (Mobile sidebar backdrop) ===== */
@@ -119,15 +126,16 @@
 
     /* ===== SIDEBAR ===== */
     .nav-sidebar {
-      width: 200px;
+      width: 210px;
       flex-shrink: 0;
-      background: linear-gradient(180deg, #1b5e20 0%, #2e7d32 60%, #388e3c 100%);
+      background: linear-gradient(180deg, #09260a 0%, #1b5e20 30%, #2e7d32 75%, #184e1b 100%);
       display: flex;
       flex-direction: column;
-      padding: 12px 0;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
-      transition: width 0.3s ease, padding 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+      padding: 16px 0;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.18);
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
       overflow: hidden;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     /* Desktop: sidebar collapse (sembunyikan sidebar) */
@@ -138,61 +146,41 @@
       min-width: 0;
     }
 
-    /* Tombol tutup di dalam sidebar (desktop only) */
-    .sidebar-close-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: calc(100% - 16px);
-      margin: 0 8px 8px;
-      padding: 10px 14px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 6px;
-      background: rgba(0, 0, 0, 0.15);
-      color: rgba(255, 255, 255, 0.9);
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: left;
-      transition: background 0.2s;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .sidebar-close-btn:hover {
-      background: rgba(0, 0, 0, 0.3);
-      color: white;
-    }
-
     .nav-sidebar button {
-      width: 100%;
-      padding: 14px 18px;
+      width: calc(100% - 16px);
+      margin: 3px 8px;
+      padding: 12px 16px;
       border: none;
+      border-radius: 10px;
       background: transparent;
       color: rgba(255, 255, 255, 0.85);
       cursor: pointer;
       font-weight: 600;
-      font-size: 14px;
+      font-size: 13.5px;
+      font-family: 'Inter', sans-serif;
       text-align: left;
       display: flex;
       align-items: center;
-      gap: 10px;
-      transition: all 0.2s;
+      gap: 12px;
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
       border-left: 4px solid transparent;
       white-space: nowrap;
     }
 
     .nav-sidebar button:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: white;
-      border-left-color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border-left-color: #a5d6a7;
+      transform: translateX(4px);
     }
 
     .nav-sidebar button.active {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border-left-color: #ffd700;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.08) 100%);
+      color: #ffffff;
+      border-left-color: #ffca28;
       font-weight: 700;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateX(2px);
     }
 
     /* ===== KONTEN UTAMA ===== */
