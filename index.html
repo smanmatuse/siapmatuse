@@ -3947,6 +3947,11 @@
         return;
       }
 
+      // Buka tab SEKARANG (masih konteks user-gesture, tidak diblokir browser)
+      const win = window.open('', '_blank');
+      if (!win) { showError('Pop-up diblokir. Izinkan pop-up untuk browser ini.'); return; }
+      win.document.write('<html><body style="font-family:sans-serif;text-align:center;padding:50px;"><h2>⏳ Menyiapkan laporan...</h2><p>Mohon jangan tutup tab ini.</p></body></html>');
+
       let headerHtml = '';
       let footerHtml = '';
       let combinedRows = '';
@@ -3974,6 +3979,7 @@
               } else {
                 showLoading(false);
               }
+              win.close();
               showError(r.error || 'Gagal membuat laporan pada bagian ' + page);
               return;
             }
@@ -4004,14 +4010,11 @@
                 showLoading(false);
               }
               const finalHtml = headerHtml + combinedRows + footerHtml;
-
-              const win = window.open('', '_blank');
-              if (win) {
-                win.document.write(finalHtml);
-                win.document.close();
-              } else {
-                showError('Pop-up diblokir. Izinkan pop-up untuk melihat laporan.');
-              }
+              win.document.open();
+              win.document.write(finalHtml);
+              win.document.close();
+              win.focus();
+              win.print();
             }
           })
           .withFailureHandler(function (e) {
@@ -4022,6 +4025,7 @@
             } else {
               showLoading(false);
             }
+            win.close();
             showError('Koneksi terputus di bagian ' + page + ': ' + e);
           })
           .downloadLaporanGuru(kelas, mapel, bulan, tahun, App.user.email, page, 30);
@@ -4041,6 +4045,11 @@
         return;
       }
 
+      // Buka tab SEKARANG (masih konteks user-gesture, tidak diblokir browser)
+      const win = window.open('', '_blank');
+      if (!win) { showError('Pop-up diblokir. Izinkan pop-up untuk browser ini.'); return; }
+      win.document.write('<html><body style="font-family:sans-serif;text-align:center;padding:50px;"><h2>⏳ Menyiapkan laporan...</h2><p>Mohon jangan tutup tab ini.</p></body></html>');
+
       const btn = document.getElementById('btnDownloadBulanan');
       if (btn) {
         btn.disabled = true;
@@ -4056,6 +4065,7 @@
         } else {
           showLoading(false);
         }
+        win.close();
         showError('Permintaan waktu habis (Timeout). Data mungkin terlalu besar atau koneksi lambat.');
       }, 180000);
 
@@ -4069,14 +4079,13 @@
             showLoading(false);
           }
           if (r.success) {
-            const win = window.open('', '_blank');
-            if (win) {
-              win.document.write(r.html);
-              win.document.close();
-            } else {
-              showError('Pop-up diblokir. Izinkan pop-up untuk melihat laporan.');
-            }
+            win.document.open();
+            win.document.write(r.html);
+            win.document.close();
+            win.focus();
+            win.print();
           } else {
+            win.close();
             showError(r.error || 'Gagal membuat laporan');
           }
         })
@@ -4088,6 +4097,7 @@
           } else {
             showLoading(false);
           }
+          win.close();
           showError('Gagal: ' + e);
         })
         .downloadLaporanBulanan(kelas, bulan, tahun);
@@ -4102,6 +4112,11 @@
         showError('Pilih kelas!');
         return;
       }
+
+      // Buka tab SEKARANG (masih konteks user-gesture, tidak diblokir browser)
+      const win = window.open('', '_blank');
+      if (!win) { showError('Pop-up diblokir. Izinkan pop-up untuk browser ini.'); return; }
+      win.document.write('<html><body style="font-family:sans-serif;text-align:center;padding:50px;"><h2>⏳ Menyiapkan laporan...</h2><p>Mohon jangan tutup tab ini.</p></body></html>');
 
       const btn = document.getElementById('btnDownloadShalat');
       if (btn) {
@@ -4118,6 +4133,7 @@
         } else {
           showLoading(false);
         }
+        win.close();
         showError('Permintaan waktu habis (Timeout). Data mungkin terlalu besar atau koneksi lambat.');
       }, 180000);
 
@@ -4131,14 +4147,13 @@
             showLoading(false);
           }
           if (r.success) {
-            const win = window.open('', '_blank');
-            if (win) {
-              win.document.write(r.html);
-              win.document.close();
-            } else {
-              showError('Pop-up diblokir. Izinkan pop-up untuk melihat laporan.');
-            }
+            win.document.open();
+            win.document.write(r.html);
+            win.document.close();
+            win.focus();
+            win.print();
           } else {
+            win.close();
             showError(r.error || 'Gagal membuat laporan');
           }
         })
@@ -4150,6 +4165,7 @@
           } else {
             showLoading(false);
           }
+          win.close();
           showError('Gagal: ' + e);
         })
         .downloadLaporanShalat(kelas, bulan, tahun);
@@ -4177,6 +4193,14 @@
         return;
       }
 
+      // Buka tab SEKARANG hanya untuk format PDF (Excel = download file, tidak butuh tab)
+      let win = null;
+      if (format !== 'excel') {
+        win = window.open('', '_blank');
+        if (!win) { showError('Pop-up diblokir. Izinkan pop-up untuk browser ini.'); return; }
+        win.document.write('<html><body style="font-family:sans-serif;text-align:center;padding:50px;"><h2>⏳ Menyiapkan laporan...</h2><p>Mohon jangan tutup tab ini.</p></body></html>');
+      }
+
       const btn = document.getElementById('btnDownloadNilai');
       if (btn) {
         btn.disabled = true;
@@ -4192,6 +4216,7 @@
         } else {
           showLoading(false);
         }
+        if (win) win.close();
         showError('Permintaan waktu habis (Timeout). Data mungkin terlalu besar atau koneksi lambat.');
       }, 180000);
       google.script.run
@@ -4215,15 +4240,14 @@
               a.remove();
               window.URL.revokeObjectURL(url);
             } else {
-              const win = window.open('', '_blank');
-              if (win) {
-                win.document.write(r.html);
-                win.document.close();
-              } else {
-                showError('Pop-up diblokir.');
-              }
+              win.document.open();
+              win.document.write(r.html);
+              win.document.close();
+              win.focus();
+              win.print();
             }
           } else {
+            if (win) win.close();
             showError(r.error || 'Gagal membuat laporan');
           }
         })
@@ -4235,6 +4259,7 @@
           } else {
             showLoading(false);
           }
+          if (win) win.close();
           showError('Gagal: ' + e);
         })
         .downloadLaporanNilai(kelas, mapel, App.user.profil.email, siswa);
@@ -4326,6 +4351,11 @@
       const tahun = document.getElementById('lapSiswaTahun').value;
       if (!nis || !kelas) { showError('Pilih kelas dan siswa!'); return; }
 
+      // Buka tab SEKARANG (masih konteks user-gesture, tidak diblokir browser)
+      const win = window.open('', '_blank');
+      if (!win) { showError('Pop-up diblokir. Izinkan pop-up untuk browser ini.'); return; }
+      win.document.write('<html><body style="font-family:sans-serif;text-align:center;padding:50px;"><h2>⏳ Menyiapkan laporan...</h2><p>Mohon jangan tutup tab ini.</p></body></html>');
+
       const btn = document.getElementById('btnDownloadSiswa');
       if (btn) {
         btn.disabled = true;
@@ -4342,6 +4372,7 @@
         } else {
           showLoading(false);
         }
+        win.close();
         showError('Permintaan waktu habis (Timeout). Coba lagi beberapa saat lagi.');
       }, 180000);
 
@@ -4355,10 +4386,15 @@
             showLoading(false);
           }
           if (r.success) {
-            const win = window.open('', '_blank');
+            win.document.open();
             win.document.write(r.html);
             win.document.close();
-          } else { showError(r.error); }
+            win.focus();
+            win.print();
+          } else {
+            win.close();
+            showError(r.error);
+          }
         })
         .withFailureHandler(function (e) {
           clearTimeout(timeoutId);
@@ -4368,6 +4404,7 @@
           } else {
             showLoading(false);
           }
+          win.close();
           showError('Gagal: ' + e);
         })
         .downloadLaporanOrangTuaPdf(nis, kelas, bulan, tahun);
@@ -6022,6 +6059,11 @@
         return;
       }
 
+      // Buka tab SEKARANG (masih konteks user-gesture, tidak diblokir browser)
+      const win = window.open('', '_blank');
+      if (!win) { showError('Pop-up diblokir. Izinkan pop-up untuk browser ini.'); return; }
+      win.document.write('<html><body style="font-family:sans-serif;text-align:center;padding:50px;"><h2>⏳ Menyiapkan laporan...</h2><p>Mohon jangan tutup tab ini.</p></body></html>');
+
       const btn = document.getElementById('btnDownloadKehadiran');
       if (btn) {
         btn.disabled = true;
@@ -6037,6 +6079,7 @@
         } else {
           showLoading(false);
         }
+        win.close();
         showError('Permintaan waktu habis (Timeout). Data mungkin terlalu besar atau koneksi lambat.');
       }, 180000);
       google.script.run
@@ -6049,10 +6092,13 @@
             showLoading(false);
           }
           if (r.success) {
-            const win = window.open('', '_blank');
+            win.document.open();
             win.document.write(r.html);
             win.document.close();
+            win.focus();
+            win.print();
           } else {
+            win.close();
             showError(r.error || 'Gagal membuat PDF');
           }
         })
@@ -6064,6 +6110,7 @@
           } else {
             showLoading(false);
           }
+          win.close();
           showError('Gagal: ' + e);
         })
         .downloadLaporanKehadiranEkskul(ekskulId, tahunAjaran, filterKelas);
@@ -6083,6 +6130,11 @@
       // Tentukan mode yang aktif
       const modeTanggal = document.getElementById('modeTanggalBtn').classList.contains('active');
 
+      // Buka tab SEKARANG (masih konteks user-gesture, tidak diblokir browser)
+      const win = window.open('', '_blank');
+      if (!win) { showError('Pop-up diblokir. Izinkan pop-up untuk browser ini.'); return; }
+      win.document.write('<html><body style="font-family:sans-serif;text-align:center;padding:50px;"><h2>⏳ Menyiapkan laporan...</h2><p>Mohon jangan tutup tab ini.</p></body></html>');
+
       const btn = document.getElementById('btnDownloadCatatan');
       if (btn) {
         btn.disabled = true;
@@ -6098,68 +6150,52 @@
         } else {
           showLoading(false);
         }
+        win.close();
         showError('Permintaan waktu habis (Timeout). Data mungkin terlalu besar atau koneksi lambat.');
       }, 180000);
 
+      // Handler sukses digunakan bersama untuk kedua mode
+      function onSuccess(r) {
+        clearTimeout(timeoutId);
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '📥 DOWNLOAD PDF CATATAN';
+        } else {
+          showLoading(false);
+        }
+        if (r.success) {
+          win.document.open();
+          win.document.write(r.html);
+          win.document.close();
+          win.focus();
+          win.print();
+        } else {
+          win.close();
+          showError(r.error || 'Gagal membuat PDF');
+        }
+      }
+
+      function onFailure(e) {
+        clearTimeout(timeoutId);
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '📥 DOWNLOAD PDF CATATAN';
+        } else {
+          showLoading(false);
+        }
+        win.close();
+        showError('Gagal: ' + e);
+      }
+
       if (modeTanggal) {
-        // Panggil fungsi download per tanggal
         google.script.run
-          .withSuccessHandler(function (r) {
-            clearTimeout(timeoutId);
-            if (btn) {
-              btn.disabled = false;
-              btn.innerHTML = '📥 DOWNLOAD PDF CATATAN';
-            } else {
-              showLoading(false);
-            }
-            if (r.success) {
-              const win = window.open('', '_blank');
-              win.document.write(r.html);
-              win.document.close();
-            } else {
-              showError(r.error || 'Gagal membuat PDF');
-            }
-          })
-          .withFailureHandler(function (e) {
-            clearTimeout(timeoutId);
-            if (btn) {
-              btn.disabled = false;
-              btn.innerHTML = '📥 DOWNLOAD PDF CATATAN';
-            } else {
-              showLoading(false);
-            }
-            showError('Gagal: ' + e);
-          })
+          .withSuccessHandler(onSuccess)
+          .withFailureHandler(onFailure)
           .downloadLaporanCatatanPerTanggal(ekskulId, tahunAjaran, filterKelas);
       } else {
-        // Panggil fungsi download per siswa
         google.script.run
-          .withSuccessHandler(function (r) {
-            clearTimeout(timeoutId);
-            if (btn) {
-              btn.disabled = false;
-              btn.innerHTML = '📥 DOWNLOAD PDF CATATAN';
-            } else {
-              showLoading(false);
-            }
-            if (r.success) {
-              const win = window.open('', '_blank');
-              win.document.write(r.html);
-              win.document.close();
-            } else {
-              showError(r.error || 'Gagal membuat PDF');
-            }
-          })
-          .withFailureHandler(function (e) {
-            clearTimeout(timeoutId);
-            if (btn) {
-              btn.disabled = false;
-              btn.innerHTML = '📥 DOWNLOAD PDF CATATAN';
-            } else {
-              showLoading(false);
-            }
-            showError('Gagal: ' + e);
-          })
+          .withSuccessHandler(onSuccess)
+          .withFailureHandler(onFailure)
           .downloadLaporanCatatanPerSiswa(ekskulId, tahunAjaran, filterKelas);
       }
     }
@@ -6178,6 +6214,11 @@
         return;
       }
 
+      // Buka tab SEKARANG (masih konteks user-gesture, tidak diblokir browser)
+      const win = window.open('', '_blank');
+      if (!win) { showError('Pop-up diblokir. Izinkan pop-up untuk browser ini.'); return; }
+      win.document.write('<html><body style="font-family:sans-serif;text-align:center;padding:50px;"><h2>⏳ Menyiapkan laporan...</h2><p>Mohon jangan tutup tab ini.</p></body></html>');
+
       const btn = document.getElementById('btnDownloadSikap');
       if (btn) {
         btn.disabled = true;
@@ -6193,6 +6234,7 @@
         } else {
           showLoading(false);
         }
+        win.close();
         showError('Permintaan waktu habis (Timeout). Data mungkin terlalu besar atau koneksi lambat.');
       }, 180000);
 
@@ -6206,10 +6248,13 @@
             showLoading(false);
           }
           if (r.success) {
-            const win = window.open('', '_blank');
+            win.document.open();
             win.document.write(r.html);
             win.document.close();
+            win.focus();
+            win.print();
           } else {
+            win.close();
             showError(r.error || 'Gagal membuat laporan');
           }
         })
@@ -6221,6 +6266,7 @@
           } else {
             showLoading(false);
           }
+          win.close();
           showError('Gagal: ' + e);
         })
         .downloadLaporanSikap(kelas, tahunAjaran, jenis);
@@ -6757,6 +6803,11 @@
 
       if (!bulan || !tahun) return;
 
+      // Buka tab SEKARANG (masih konteks user-gesture, tidak diblokir browser)
+      const win = window.open('', '_blank');
+      if (!win) { showError('Pop-up diblokir. Izinkan pop-up untuk browser ini.'); return; }
+      win.document.write('<html><body style="font-family:sans-serif;text-align:center;padding:50px;"><h2>⏳ Menyiapkan laporan...</h2><p>Mohon jangan tutup tab ini.</p></body></html>');
+
       const btn = document.getElementById('btnDownloadJurnal');
       if (btn) {
         btn.disabled = true;
@@ -6772,6 +6823,7 @@
         } else {
           showLoading(false);
         }
+        win.close();
         showError('Permintaan waktu habis (Timeout). Data mungkin terlalu besar atau koneksi lambat.');
       }, 180000);
 
@@ -6785,10 +6837,13 @@
             showLoading(false);
           }
           if (r.success) {
-            const win = window.open('', '_blank');
+            win.document.open();
             win.document.write(r.html);
             win.document.close();
+            win.focus();
+            win.print();
           } else {
+            win.close();
             showError(r.error || 'Gagal membuat laporan');
           }
         })
@@ -6800,6 +6855,7 @@
           } else {
             showLoading(false);
           }
+          win.close();
           showError('Gagal: ' + e);
         })
         .downloadLaporanJurnal(bulan, tahun, App.user.profil.email);
@@ -6813,6 +6869,11 @@
       const tahun = document.getElementById('lapWaliTahun')?.value;
 
       if (!bulan || !tahun) return;
+
+      // Buka tab SEKARANG (masih konteks user-gesture, tidak diblokir browser)
+      const win = window.open('', '_blank');
+      if (!win) { showError('Pop-up diblokir. Izinkan pop-up untuk browser ini.'); return; }
+      win.document.write('<html><body style="font-family:sans-serif;text-align:center;padding:50px;"><h2>⏳ Menyiapkan laporan...</h2><p>Mohon jangan tutup tab ini.</p></body></html>');
 
       const btn = document.getElementById('btnDownloadWali');
       if (btn) {
@@ -6829,6 +6890,7 @@
         } else {
           showLoading(false);
         }
+        win.close();
         showError('Permintaan waktu habis (Timeout). Data mungkin terlalu besar atau koneksi lambat.');
       }, 180000);
 
@@ -6842,10 +6904,13 @@
             showLoading(false);
           }
           if (r.success) {
-            const win = window.open('', '_blank');
+            win.document.open();
             win.document.write(r.html);
             win.document.close();
+            win.focus();
+            win.print();
           } else {
+            win.close();
             showError(r.error || 'Gagal membuat laporan');
           }
         })
@@ -6857,6 +6922,7 @@
           } else {
             showLoading(false);
           }
+          win.close();
           showError('Gagal: ' + e);
         })
         .downloadLaporanWaliPdf(bulan, tahun, App.user.profil.email);
@@ -7158,6 +7224,11 @@
       const bulan = document.getElementById('ortuBulan').value;
       const tahun = document.getElementById('ortuTahun').value;
 
+      // Buka tab SEKARANG (masih konteks user-gesture, tidak diblokir browser)
+      const win = window.open('', '_blank');
+      if (!win) { showError('Pop-up diblokir. Izinkan pop-up untuk browser ini.'); return; }
+      win.document.write('<html><body style="font-family:sans-serif;text-align:center;padding:50px;"><h2>⏳ Menyiapkan laporan...</h2><p>Mohon jangan tutup tab ini.</p></body></html>');
+
       const btn = document.getElementById('btnDownloadOrtu');
       if (btn) {
         btn.disabled = true;
@@ -7173,6 +7244,7 @@
         } else {
           showLoading(false);
         }
+        win.close();
         showError('Permintaan waktu habis (Timeout). Coba lagi beberapa saat lagi.');
       }, 180000);
 
@@ -7186,10 +7258,15 @@
             showLoading(false);
           }
           if (r.success) {
-            const win = window.open('', '_blank');
+            win.document.open();
             win.document.write(r.html);
             win.document.close();
-          } else { showError(r.error); }
+            win.focus();
+            win.print();
+          } else {
+            win.close();
+            showError(r.error);
+          }
         })
         .withFailureHandler(function (e) {
           clearTimeout(timeoutId);
@@ -7199,6 +7276,7 @@
           } else {
             showLoading(false);
           }
+          win.close();
           showError('Gagal: ' + e);
         })
         .downloadLaporanOrangTuaPdf(nis, kelas, bulan, tahun);
