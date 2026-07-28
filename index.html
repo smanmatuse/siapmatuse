@@ -2250,6 +2250,10 @@
       <!-- FORM INPUT BIASA -->
       <div class="form-grid">
         <div class="form-group">
+          <label>Tanggal <span style="font-size:10px;font-weight:normal;color:#666;">(Pilih jika absen lampau)</span></label>
+          <input type="date" id="absenTanggal" value="${new Date().toISOString().split('T')[0]}" onchange="document.getElementById('absenContainer').style.display='none'">
+        </div>
+        <div class="form-group">
           <label>Kelas</label>
           <select id="absenKelas" onchange="loadMapel()">${kelasOptions}</select>
         </div>
@@ -2483,10 +2487,10 @@
       const kelas = document.getElementById('absenKelas').value;
       const mapel = document.getElementById('absenMapel').value;
       const jam = document.getElementById('absenJam').value;
-      const tanggal = new Date().toISOString().split('T')[0];
+      const tanggal = document.getElementById('absenTanggal').value;
 
-      if (!kelas || !mapel || !jam) {
-        showError('Pilih kelas, mapel, dan jam terlebih dahulu!');
+      if (!kelas || !mapel || !jam || !tanggal) {
+        showError('Pilih tanggal, kelas, mapel, dan jam terlebih dahulu!');
         return;
       }
 
