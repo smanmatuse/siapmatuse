@@ -7181,6 +7181,22 @@
         html += `</div>`;
       }
       
+      if (data.nilaiBelumLengkap && data.nilaiBelumLengkap.length > 0) {
+        let listItems = '';
+        data.nilaiBelumLengkap.forEach(item => {
+           listItems += `<li style="margin-bottom: 5px;"><b>${item.mapel}</b>: ${item.missing.join(', ')}</li>`;
+        });
+        html += `
+        <div class="form-section" style="padding: 15px; margin-bottom: 20px; border: 1px solid #ffb74d; background-color: #fff3e0; border-radius: 8px;">
+          <h4 style="margin:0 0 10px 0; color:#e65100; font-size:14px;">⚠️ Daftar Nilai Belum Lengkap</h4>
+          <p style="margin:0 0 10px 0; color:#e65100; font-size:13px;">Anak Anda belum memiliki nilai pada penugasan berikut:</p>
+          <ul style="margin: 0; padding-left: 20px; color: #e65100; font-size:13px;">
+            ${listItems}
+          </ul>
+        </div>
+        `;
+      }
+      
       return html;
     }
 
