@@ -7071,6 +7071,19 @@
       </div>
 
       <div class="form-grid" style="margin-bottom: 20px;">
+        <!-- REKAP KEHADIRAN (FILTERED) -->
+        <div class="form-section" style="padding: 15px; margin-bottom:0; border: 1px solid #ddd; border-left: 4px solid #43a047; border-radius: 8px;">
+          <h4 style="margin:0 0 10px 0; color:#43a047; font-size:14px;">Rekap Kehadiran (${data.periode})</h4>
+          <div style="display:flex; justify-content:space-between; gap:2px;">
+            <div style="text-align:center;"><div style="font-size:11px; color:#666;">Hadir</div><div style="font-size:16px; font-weight:bold; color:#43a047;">${data.absen.H || 0}</div></div>
+            <div style="text-align:center;"><div style="font-size:11px; color:#666;">Izin</div><div style="font-size:16px; font-weight:bold; color:#fbc02d;">${data.absen.I || 0}</div></div>
+            <div style="text-align:center;"><div style="font-size:11px; color:#666;">Sakit</div><div style="font-size:16px; font-weight:bold; color:#1e88e5;">${data.absen.S || 0}</div></div>
+            <div style="text-align:center;"><div style="font-size:11px; color:#666;">Cabut</div><div style="font-size:16px; font-weight:bold; color:#fb8c00;">${data.absen.B || 0}</div></div>
+            <div style="text-align:center;"><div style="font-size:11px; color:#666;">Telat</div><div style="font-size:16px; font-weight:bold; color:#8e24aa;">${data.absen.C || 0}</div></div>
+            <div style="text-align:center;"><div style="font-size:11px; color:#666;">Alpa</div><div style="font-size:16px; font-weight:bold; color:#e53935;">${data.absen.A || 0}</div></div>
+          </div>
+        </div>
+
         <div class="form-section" style="padding: 15px; margin-bottom:0; border: 1px solid #ddd; border-left: 4px solid #8e24aa; border-radius: 8px;">
           <h4 style="margin:0 0 10px 0; color:#8e24aa; font-size:14px;">Total Shalat (${data.periode})</h4>
           <div style="display:flex; gap:15px; align-items:center;">
