@@ -2166,6 +2166,43 @@
             statistikHtml = '<p>Belum ada kelas yang diajar</p>';
           }
 
+          // Buat Jadwal HTML
+          let jadwalHtml = '';
+          if (r.jadwal && r.jadwal.length > 0) {
+            const hariIniStr = new Date().toLocaleDateString('id-ID', { weekday: 'long' }).toLowerCase();
+            jadwalHtml = `
+              <h4 style="color:#2e7d32; margin:30px 0 10px;">🗓️ JADWAL MENGAJAR SAYA</h4>
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Hari</th>
+                      <th>Jam</th>
+                      <th>Kelas</th>
+                      <th>Mata Pelajaran</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+            `;
+            r.jadwal.forEach(j => {
+              const isHariIni = j.hari.toLowerCase() === hariIniStr;
+              const rowStyle = isHariIni ? 'background-color: #e8f5e9; font-weight: bold; border-left: 4px solid #2e7d32;' : '';
+              jadwalHtml += `
+                    <tr style="${rowStyle}">
+                      <td>${j.hari} ${isHariIni ? '<span style="color:#2e7d32; font-size:0.8em; margin-left:5px;">(Hari Ini)</span>' : ''}</td>
+                      <td>${j.jam}</td>
+                      <td>${j.kelas}</td>
+                      <td>${j.mapel}</td>
+                    </tr>
+              `;
+            });
+            jadwalHtml += `
+                  </tbody>
+                </table>
+              </div>
+            `;
+          }
+
           // Tampilkan beranda dengan ucapan selamat datang dan nama guru
           const html = `
         <div class="form-section">
@@ -2174,6 +2211,8 @@
           
           <h4 style="color:#2e7d32; margin:20px 0 10px;">📊 STATISTIK SISWA</h4>
           ${statistikHtml}
+          
+          ${jadwalHtml}
         </div>
       `;
 
