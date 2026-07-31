@@ -8066,13 +8066,22 @@
       document.getElementById('pimpinan_shalat').innerHTML = html;
     }
 
-    function renderPimpinanPelanggaran() {
+    function renderPimpinanPelanggaran(forceRefresh = false) {
+      if (forceRefresh !== true) {
+        const cached = AppCache.get('cache_pimpinan_pelanggaran');
+        if (cached) {
+          tampilkanPimpinanPelanggaran(cached);
+          return;
+        }
+      }
+
       showLoading(true, 'Memuat Data Pelanggaran...');
 
       google.script.run
         .withSuccessHandler(function (r) {
           showLoading(false);
           if (r.success) {
+            AppCache.set('cache_pimpinan_pelanggaran', r.data, 10);
             tampilkanPimpinanPelanggaran(r.data);
           } else {
             showError('Gagal memuat data pelanggaran: ' + r.error);
@@ -8087,9 +8096,12 @@
 
     function tampilkanPimpinanPelanggaran(top10) {
       let html = `
-      <div class="form-section" style="background: #b71c1c; color: white; border-radius: 12px; margin-bottom: 20px;">
-        <h3 style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-top:0;">⚠️ TOP 10 PELANGGARAN SISWA</h3>
-        <p style="margin-bottom:0; font-size:14px; opacity: 0.9;">Pantau 10 siswa dengan akumulasi poin pelanggaran tertinggi (Keseluruhan).</p>
+      <div class="form-section" style="background: #b71c1c; color: white; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h3 style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-top:0;">⚠️ TOP 10 PELANGGARAN SISWA</h3>
+          <p style="margin-bottom:0; font-size:14px; opacity: 0.9;">Pantau 10 siswa dengan akumulasi poin pelanggaran tertinggi (Keseluruhan).</p>
+        </div>
+        <button class="btn btn-warning" onclick="renderPimpinanPelanggaran(true)" style="padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 8px;">🔄 SEGARKAN DATA</button>
       </div>
       
       <div class="form-section" style="padding:0; overflow:hidden;">
@@ -8128,13 +8140,22 @@
       document.getElementById('pimpinan_pelanggaran').innerHTML = html;
     }
 
-    function renderPimpinanSikap() {
+    function renderPimpinanSikap(forceRefresh = false) {
+      if (forceRefresh !== true) {
+        const cached = AppCache.get('cache_pimpinan_sikap');
+        if (cached) {
+          tampilkanPimpinanSikap(cached);
+          return;
+        }
+      }
+
       showLoading(true, 'Memuat Data Catatan Sikap...');
 
       google.script.run
         .withSuccessHandler(function (r) {
           showLoading(false);
           if (r.success) {
+            AppCache.set('cache_pimpinan_sikap', r, 10);
             tampilkanPimpinanSikap(r);
           } else {
             showError('Gagal memuat catatan sikap: ' + r.error);
@@ -8152,9 +8173,12 @@
       const top10 = r.top10;
 
       let html = `
-      <div class="form-section" style="background: #6a1b9a; color: white; border-radius: 12px; margin-bottom: 20px;">
-        <h3 style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-top:0;">📝 CATATAN SIKAP / PERKEMBANGAN</h3>
-        <p style="margin-bottom:0; font-size:14px; opacity: 0.9;">Pantau rekapitulasi catatan positif dan negatif siswa (Keseluruhan).</p>
+      <div class="form-section" style="background: #6a1b9a; color: white; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h3 style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-top:0;">📝 CATATAN SIKAP / PERKEMBANGAN</h3>
+          <p style="margin-bottom:0; font-size:14px; opacity: 0.9;">Pantau rekapitulasi catatan positif dan negatif siswa (Keseluruhan).</p>
+        </div>
+        <button class="btn btn-warning" onclick="renderPimpinanSikap(true)" style="padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 8px;">🔄 SEGARKAN DATA</button>
       </div>
 
       <div class="form-section" style="padding:0; overflow:hidden;">
