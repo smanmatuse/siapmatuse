@@ -2220,11 +2220,20 @@
       }
     }
 
-    function renderBeranda() {
+    function renderBeranda(forceRefresh = false) {
       // Cek apakah data guru tersedia
       if (!App.guruData || !App.guruData.success) {
         document.getElementById('beranda').innerHTML = `<div class="form-section"><h3 style="color:red">⚠️ Akses Ditolak</h3><p>Data guru tidak tersedia untuk email: <b>${App.user.email || 'KOSONG (Masalah Multiple Login Google)'}</b></p><p>Harap pastikan browser Anda tidak sedang login menggunakan beberapa akun Google secara bersamaan, atau gunakan mode <b>Incognito / Private Window</b>.</p></div>`;
         return;
+      }
+
+      const cacheKey = 'statistik_' + App.user.email;
+      if (forceRefresh !== true) {
+        const cached = AppCache.get(cacheKey);
+        if (cached) {
+          tampilkanBerandaGuru(cached);
+          return;
+        }
       }
 
       showLoading(true);
@@ -2232,68 +2241,77 @@
       google.script.run
         .withSuccessHandler(function (r) {
           showLoading(false);
-
           if (!r.success) {
             document.getElementById('beranda').innerHTML = '<div class="form-section"><p>Gagal memuat statistik</p></div>';
             return;
           }
+          AppCache.set(cacheKey, r, 10);
+          tampilkanBerandaGuru(r);
+        })
+        .withFailureHandler(function (e) {
+          showLoading(false);
+          showError('Gagal memuat statistik: ' + e);
+        })
+        .getStatistikKelas(App.user.email);
+    }
 
-          // Buat statistik grid
-          let statistikHtml = '';
-          if (r.statistik && r.statistik.length > 0) {
-            statistikHtml = '<div class="stat-grid">';
-            r.statistik.forEach(s => {
-              statistikHtml += `
+    function tampilkanBerandaGuru(r) {
+      // Buat statistik grid
+      let statistikHtml = '';
+      if (r.statistik && r.statistik.length > 0) {
+        statistikHtml = '<div class="stat-grid">';
+        r.statistik.forEach(s => {
+          statistikHtml += `
             <div class="stat-card">
               <div class="num">${s.jumlah}</div>
               <div class="label">Kelas ${s.kelas}</div>
             </div>
           `;
-            });
-            statistikHtml += '</div>';
-          } else {
-            statistikHtml = '<p>Belum ada kelas yang diajar</p>';
-          }
+        });
+        statistikHtml += '</div>';
+      } else {
+        statistikHtml = '<p>Belum ada kelas yang diajar</p>';
+      }
 
-          // Buat Jadwal HTML
-          let jadwalHtml = '';
-          if (r.jadwal && r.jadwal.length > 0) {
-            const hariIniStr = new Date().toLocaleDateString('id-ID', { weekday: 'long' }).toLowerCase();
-            jadwalHtml = `
-              <h4 style="color:#2e7d32; margin:30px 0 10px;">🗓️ JADWAL MENGAJAR SAYA</h4>
-              <div class="table-container">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Hari</th>
-                      <th>Jam</th>
-                      <th>Kelas</th>
-                      <th>Mata Pelajaran</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-            `;
-            r.jadwal.forEach(j => {
-              const isHariIni = j.hari.toLowerCase() === hariIniStr;
-              const rowStyle = isHariIni ? 'background-color: #e8f5e9; font-weight: bold; border-left: 4px solid #2e7d32;' : '';
-              jadwalHtml += `
-                    <tr style="${rowStyle}">
-                      <td>${j.hari} ${isHariIni ? '<span style="color:#2e7d32; font-size:0.8em; margin-left:5px;">(Hari Ini)</span>' : ''}</td>
-                      <td>${j.jam}</td>
-                      <td>${j.kelas}</td>
-                      <td>${j.mapel}</td>
-                    </tr>
-              `;
-            });
-            jadwalHtml += `
-                  </tbody>
-                </table>
-              </div>
-            `;
-          }
+      // Buat Jadwal HTML
+      let jadwalHtml = '';
+      if (r.jadwal && r.jadwal.length > 0) {
+        const hariIniStr = new Date().toLocaleDateString('id-ID', { weekday: 'long' }).toLowerCase();
+        jadwalHtml = `
+          <h4 style="color:#2e7d32; margin:30px 0 10px;">🗓️ JADWAL MENGAJAR SAYA</h4>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Hari</th>
+                  <th>Jam</th>
+                  <th>Kelas</th>
+                  <th>Mata Pelajaran</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+        r.jadwal.forEach(j => {
+          const isHariIni = j.hari.toLowerCase() === hariIniStr;
+          const rowStyle = isHariIni ? 'background-color: #e8f5e9; font-weight: bold; border-left: 4px solid #2e7d32;' : '';
+          jadwalHtml += `
+                <tr style="${rowStyle}">
+                  <td>${j.hari} ${isHariIni ? '<span style="color:#2e7d32; font-size:0.8em; margin-left:5px;">(Hari Ini)</span>' : ''}</td>
+                  <td>${j.jam}</td>
+                  <td>${j.kelas}</td>
+                  <td>${j.mapel}</td>
+                </tr>
+          `;
+        });
+        jadwalHtml += `
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
 
-          // Tampilkan beranda dengan ucapan selamat datang dan nama guru
-          const html = `
+      // Tampilkan beranda dengan ucapan selamat datang dan nama guru
+      const html = `
         <div class="form-section">
           <h2 style="color:#2e7d32; margin-bottom:10px;">👋 SELAMAT DATANG</h2>
           <h3 style="margin-bottom:20px; font-size:1.8rem;">${r.nama || App.guruData.nama || '-'}</h3>
@@ -2305,13 +2323,7 @@
         </div>
       `;
 
-          document.getElementById('beranda').innerHTML = html;
-        })
-        .withFailureHandler(function (e) {
-          showLoading(false);
-          showError('Gagal memuat statistik: ' + e);
-        })
-        .getStatistikKelas(App.user.email);
+      document.getElementById('beranda').innerHTML = html;
     }
 
     // ============================================================
@@ -7131,9 +7143,8 @@
     <div id="ortuPreviewContainer" style="display:none; margin-top:20px;" class="form-section">
       <div id="ortuPreviewContent" style="background:#fff; border:1px solid #ddd; padding:20px; min-height:400px; border-radius:8px;">
       </div>
-      <div class="bottom-button" style="display:flex; justify-content:center; gap:10px;">
+      <div class="bottom-button">
         <button id="btnDownloadOrtu" class="btn btn-warning" onclick="downloadLaporanOrtu()">📥 DOWNLOAD PDF</button>
-        <button class="btn btn-primary" onclick="previewLaporanOrtu(true)">🔄 SEGARKAN DATA</button>
       </div>
     </div>
   `;
