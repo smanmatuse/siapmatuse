@@ -7162,7 +7162,7 @@
       const bulan = document.getElementById('ortuBulan').value;
       const tahun = document.getElementById('ortuTahun').value;
 
-      const cacheKey = 'ortu_' + nis + '_' + bulan + '_' + tahun;
+      const cacheKey = 'ortu_v2_' + nis + '_' + bulan + '_' + tahun;
       if (forceRefresh !== true) {
         const cached = AppCache.get(cacheKey);
         if (cached) {
@@ -7225,6 +7225,8 @@
         mingguIni: {H:0,I:0,S:0,A:0,C:0,T:0}, 
         bulanIni: {H:0,I:0,S:0,A:0,C:0,T:0} 
       };
+      const sikapList = data.sikap || data.catatan || [];
+      const totalBobot = data.totalBobot !== undefined ? data.totalBobot : null;
       
       let html = `
       <div style="margin-bottom:20px; padding-bottom:10px; border-bottom:2px solid #2e7d32; display:flex; justify-content:space-between; align-items:center;">
@@ -7316,25 +7318,23 @@
       </div>
       `;
       
-      let totalBobotColor = data.totalBobot >= 0 ? '#2e7d32' : '#c62828';
-      let totalBobotBg = data.totalBobot >= 0 ? '#e8f5e9' : '#ffebee';
-      let totalBobotBorder = data.totalBobot >= 0 ? '#43a047' : '#d32f2f';
-      let totalBobotText = data.totalBobot > 0 ? '+' + data.totalBobot : data.totalBobot;
+      let totalBobotColor = totalBobot >= 0 ? '#2e7d32' : '#c62828';
+      let totalBobotBg = totalBobot >= 0 ? '#e8f5e9' : '#ffebee';
+      let totalBobotBorder = totalBobot >= 0 ? '#43a047' : '#d32f2f';
+      let totalBobotText = totalBobot > 0 ? '+' + totalBobot : totalBobot;
 
       html += `
       <div style="display:flex; justify-content:space-between; align-items:center; margin: 0 0 10px 0;">
         <h4 style="margin:0; color:#333;">Catatan Sikap & Pelanggaran</h4>
-        <div style="background:${totalBobotBg}; color:${totalBobotColor}; padding:4px 12px; border-radius:15px; font-weight:bold; font-size:14px; border:1px solid ${totalBobotBorder};">
-          Total Bobot: ${totalBobotText}
-        </div>
+        ${totalBobot !== null ? `<div style="background:${totalBobotBg}; color:${totalBobotColor}; padding:4px 12px; border-radius:15px; font-weight:bold; font-size:14px; border:1px solid ${totalBobotBorder};">Total Bobot: ${totalBobotText}</div>` : ''}
       </div>
       <div class="form-section" style="padding:0; margin-bottom: 20px; overflow:hidden; border:1px solid #eee;">
       `;
       
-      if (data.sikap.length === 0) {
+      if (sikapList.length === 0) {
         html += `<p style="padding:15px; color:#666; font-size:13px; text-align:center; margin:0;">Belum ada catatan sikap/pelanggaran pada periode ini.</p>`;
       } else {
-        data.sikap.forEach(s => {
+        sikapList.forEach(s => {
           const isPelanggaran = s.jenis.toLowerCase().includes('pelanggaran');
           const colorClass = isPelanggaran ? '#d32f2f' : '#43a047';
           const bgClass = isPelanggaran ? '#ffebee' : '#e8f5e9';
