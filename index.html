@@ -1353,6 +1353,7 @@
         <div id="pimpinan_shalat" class="menu-content" style="display:none;"></div>
         <div id="pimpinan_pelanggaran" class="menu-content" style="display:none;"></div>
         <div id="pimpinan_sikap" class="menu-content" style="display:none;"></div>
+        <div id="pimpinan_bobot" class="menu-content" style="display:none;"></div>
         <div id="loading" class="loading">
           <div class="spinner"></div>
           <p>Memuat data...</p>
@@ -1663,7 +1664,8 @@
           { id: 'pimpinan_aktivitas', label: '👨‍🏫', text: 'AKTIVITAS GURU' },
           { id: 'pimpinan_shalat', label: '🕌', text: 'SHALAT' },
           { id: 'pimpinan_pelanggaran', label: '⚠️', text: 'PELANGGARAN' },
-          { id: 'pimpinan_sikap', label: '📝', text: 'SIKAP' }
+          { id: 'pimpinan_sikap', label: '📝', text: 'SIKAP' },
+          { id: 'pimpinan_bobot', label: '⚖️', text: 'BOBOT' }
         ];
       }
 
@@ -1745,6 +1747,8 @@
         renderPimpinanPelanggaran();
       } else if (menuId === 'pimpinan_sikap') {
         renderPimpinanSikap();
+      } else if (menuId === 'pimpinan_bobot') {
+        renderPimpinanBobot();
       }
     }
 
@@ -7310,8 +7314,20 @@
           </div>
         </div>
       </div>
+      `;
       
-      <h4 style="margin:0 0 10px 0; color:#333;">Catatan Sikap & Pelanggaran</h4>
+      let totalBobotColor = data.totalBobot >= 0 ? '#2e7d32' : '#c62828';
+      let totalBobotBg = data.totalBobot >= 0 ? '#e8f5e9' : '#ffebee';
+      let totalBobotBorder = data.totalBobot >= 0 ? '#43a047' : '#d32f2f';
+      let totalBobotText = data.totalBobot > 0 ? '+' + data.totalBobot : data.totalBobot;
+
+      html += `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin: 0 0 10px 0;">
+        <h4 style="margin:0; color:#333;">Catatan Sikap & Pelanggaran</h4>
+        <div style="background:${totalBobotBg}; color:${totalBobotColor}; padding:4px 12px; border-radius:15px; font-weight:bold; font-size:14px; border:1px solid ${totalBobotBorder};">
+          Total Bobot: ${totalBobotText}
+        </div>
+      </div>
       <div class="form-section" style="padding:0; margin-bottom: 20px; overflow:hidden; border:1px solid #eee;">
       `;
       
@@ -7327,8 +7343,13 @@
             <div style="background:${bgClass}; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold; color:${colorClass}; white-space:nowrap; min-width:100px; text-align:center;">
               ${s.tanggal}
             </div>
-            <div>
-              <div style="font-weight:bold; font-size:13px; color:${colorClass}; margin-bottom:3px;">${s.jenis}</div>
+            <div style="flex:1;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                <div style="font-weight:bold; font-size:13px; color:${colorClass};">${s.jenis}</div>
+                <div style="font-weight:bold; font-size:12px; color:${colorClass}; background:${bgClass}; padding:2px 6px; border-radius:4px;">
+                  Bobot: ${s.poin > 0 ? '+' + s.poin : s.poin}
+                </div>
+              </div>
               <div style="font-size:13px; color:#555; line-height:1.4;">${s.detail}</div>
             </div>
           </div>
@@ -8241,6 +8262,137 @@
       `;
 
       document.getElementById('pimpinan_sikap').innerHTML = html;
+    }
+
+    // ============================================================
+    // ============ FUNGSI BOBOT SISWA (PIMPINAN) =================
+    // ============================================================
+    function renderPimpinanBobot(forceRefresh = false) {
+      const kelasSelect = document.getElementById('filterKelasBobotPimpinan');
+      const bulanSelect = document.getElementById('filterBulanBobotPimpinan');
+      
+      const kelas = kelasSelect ? kelasSelect.value : 'E1';
+      const bulan = bulanSelect ? bulanSelect.value : 'ALL';
+
+      const cacheKey = `cache_pimpinan_bobot_${kelas}_${bulan}`;
+      
+      if (forceRefresh !== true) {
+        const cached = AppCache.get(cacheKey);
+        if (cached) {
+          tampilkanPimpinanBobot(cached, kelas, bulan);
+          return;
+        }
+      }
+
+      showLoading(true, 'Memuat Data Bobot Siswa...');
+
+      google.script.run
+        .withSuccessHandler(function (r) {
+          showLoading(false);
+          if (r.success) {
+            AppCache.set(cacheKey, r.data, 10);
+            tampilkanPimpinanBobot(r.data, kelas, bulan);
+          } else {
+            showError('Gagal memuat data bobot: ' + r.error);
+          }
+        })
+        .withFailureHandler(function (e) {
+          showLoading(false);
+          showError('Koneksi gagal: ' + e);
+        })
+        .getDashboardBobotSiswa(kelas, bulan);
+    }
+
+    function tampilkanPimpinanBobot(dataBobot, currentKelas, currentBulan) {
+      let kelasOptions = '';
+      App.config.kelasReguler.forEach(k => {
+        kelasOptions += `<option value="${k}" ${k === currentKelas ? 'selected' : ''}>${k}</option>`;
+      });
+
+      const bulanNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      let bulanOptions = `<option value="ALL" ${currentBulan === 'ALL' ? 'selected' : ''}>Semua Bulan</option>`;
+      bulanNames.forEach((b, idx) => {
+        const val = idx + 1;
+        bulanOptions += `<option value="${val}" ${val.toString() === currentBulan ? 'selected' : ''}>${b}</option>`;
+      });
+
+      let html = `
+      <div class="form-section" style="background: #00838f; color: white; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h3 style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-top:0;">⚖️ BOBOT SISWA</h3>
+          <p style="margin-bottom:0; font-size:14px; opacity: 0.9;">Total Bobot = Poin Positif - Poin Pelanggaran</p>
+        </div>
+        <button class="btn btn-warning" onclick="renderPimpinanBobot(true)" style="padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 8px;">🔄 SEGARKAN DATA</button>
+      </div>
+
+      <div class="form-section" style="padding: 15px; background: #fff; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 150px;">
+            <label style="font-size: 12px; font-weight: bold; color: #666;">Filter Kelas</label>
+            <select id="filterKelasBobotPimpinan" class="form-control" onchange="renderPimpinanBobot()">${kelasOptions}</select>
+          </div>
+          <div style="flex: 1; min-width: 150px;">
+            <label style="font-size: 12px; font-weight: bold; color: #666;">Filter Bulan</label>
+            <select id="filterBulanBobotPimpinan" class="form-control" onchange="renderPimpinanBobot()">${bulanOptions}</select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section" style="padding:0; overflow:hidden;">
+        <div class="form-grid" style="padding:15px; margin-bottom:0;">
+      `;
+
+      if (dataBobot.length === 0) {
+        html += `<p style="padding:15px; color:#666; text-align:center; width:100%;">Belum ada data bobot untuk filter yang dipilih.</p>`;
+      } else {
+        dataBobot.forEach((s, idx) => {
+          let bgClass = '#f5f5f5';
+          let colorClass = '#333';
+          
+          if (s.totalBobot > 0) {
+            bgClass = '#e8f5e9';
+            colorClass = '#2e7d32';
+          } else if (s.totalBobot < 0) {
+            bgClass = '#ffebee';
+            colorClass = '#c62828';
+          }
+          
+          html += `
+          <div class="form-section" style="padding: 15px; margin-bottom:0; border: 1px solid #ddd; border-left: 4px solid ${colorClass}; border-radius: 8px;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+              <div>
+                <h4 style="margin:0 0 3px 0; color:#333; font-size:15px;">${s.nama}</h4>
+                <span style="font-size:11px; color:#666; background:#f5f5f5; padding:2px 6px; border-radius:10px;">Kelas: ${s.kelas}</span>
+              </div>
+              <div style="text-align:right; background:${bgClass}; padding:6px 12px; border-radius:8px; min-width: 70px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div style="font-size:10px; color:${colorClass}; text-transform:uppercase; font-weight:bold;">Total Bobot</div>
+                <div style="font-size:18px; font-weight:bold; color:${colorClass};">${s.totalBobot > 0 ? '+' + s.totalBobot : s.totalBobot}</div>
+              </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: space-between;">
+              <div style="flex: 1; background: #f3e5f5; border-radius: 6px; padding: 8px; text-align: center;">
+                <div style="font-size: 10px; color: #6a1b9a; font-weight: bold;">SIKAP POSITIF</div>
+                <div style="font-size: 14px; font-weight: bold; color: #8e24aa;">+${s.positif}</div>
+              </div>
+              <div style="flex: 1; background: #fff3e0; border-radius: 6px; padding: 8px; text-align: center;">
+                <div style="font-size: 10px; color: #e65100; font-weight: bold;">PELANGGARAN</div>
+                <div style="font-size: 14px; font-weight: bold; color: #ef6c00;">-${s.pelanggaran}</div>
+              </div>
+            </div>
+
+          </div>
+          `;
+        });
+      }
+
+      html += `
+        </div>
+      </div>
+      `;
+
+      document.getElementById('pimpinan_bobot').innerHTML = html;
     }
 
     // ============================================================
