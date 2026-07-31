@@ -7764,6 +7764,19 @@
             <div style="text-align:center;"><div style="font-size:11px; color:#666;">Alpa</div><div style="font-size:16px; font-weight:bold; color:#e53935;">${rekap.bulanIni.A || 0}</div></div>
           </div>
         </div>
+
+        <!-- Keseluruhan / Total -->
+        <div class="form-section" style="padding: 15px; margin-bottom:0; border-top:2px dashed #ddd;">
+          <h4 style="margin-top:0; color:#333; text-align:center; border-bottom:1px solid #ddd; padding-bottom:8px;">Total Keseluruhan</h4>
+          <div style="display:flex; justify-content:space-between; gap:2px; margin-top:10px;">
+            <div style="text-align:center;"><div style="font-size:11px; color:#666;">Hadir</div><div style="font-size:16px; font-weight:bold; color:#43a047;">${rekap.total.H || 0}</div></div>
+            <div style="text-align:center;"><div style="font-size:11px; color:#666;">Izin</div><div style="font-size:16px; font-weight:bold; color:#fbc02d;">${rekap.total.I || 0}</div></div>
+            <div style="text-align:center;"><div style="font-size:11px; color:#666;">Sakit</div><div style="font-size:16px; font-weight:bold; color:#1e88e5;">${rekap.total.S || 0}</div></div>
+            <div style="text-align:center;"><div style="font-size:11px; color:#666;">Cabut</div><div style="font-size:16px; font-weight:bold; color:#fb8c00;">${rekap.total.C || 0}</div></div>
+            <div style="text-align:center;"><div style="font-size:11px; color:#666;">Telat</div><div style="font-size:16px; font-weight:bold; color:#8e24aa;">${rekap.total.T || 0}</div></div>
+            <div style="text-align:center;"><div style="font-size:11px; color:#666;">Alpa</div><div style="font-size:16px; font-weight:bold; color:#e53935;">${rekap.total.A || 0}</div></div>
+          </div>
+        </div>
       </div>
 
       <!-- DETAIL PER KELAS HARI INI -->
