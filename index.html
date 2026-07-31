@@ -53,7 +53,7 @@
       border: 2px solid #ffd700;
       overflow: hidden;
       flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
     .logo img {
@@ -71,7 +71,7 @@
       margin: 0;
       font-weight: 800;
       letter-spacing: 0.01em;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
 
     .title p {
@@ -224,7 +224,7 @@
       padding: 22px;
       margin-bottom: 20px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
-      border: 1px solid rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0,0,0,0.05);
       position: relative;
       overflow: hidden;
     }
@@ -232,9 +232,7 @@
     .form-section::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       height: 3px;
       background: linear-gradient(90deg, #1b5e20, #43a047, #a5d6a7);
     }
@@ -292,7 +290,7 @@
       border-color: #43a047;
       outline: none;
       background: white;
-      box-shadow: 0 0 0 4px rgba(67, 160, 71, 0.12);
+      box-shadow: 0 0 0 4px rgba(67,160,71,0.12);
     }
 
     /* ===== BUTTON ===== */
@@ -308,7 +306,7 @@
       background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
       color: white;
       min-width: 120px;
-      box-shadow: 0 3px 10px rgba(46, 125, 50, 0.35);
+      box-shadow: 0 3px 10px rgba(46,125,50,0.35);
       letter-spacing: 0.01em;
       position: relative;
       overflow: hidden;
@@ -316,33 +314,33 @@
 
     .btn:hover {
       background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
-      box-shadow: 0 5px 18px rgba(46, 125, 50, 0.45);
+      box-shadow: 0 5px 18px rgba(46,125,50,0.45);
       transform: translateY(-1px);
     }
 
     .btn:active {
       transform: translateY(0);
-      box-shadow: 0 2px 6px rgba(46, 125, 50, 0.3);
+      box-shadow: 0 2px 6px rgba(46,125,50,0.3);
     }
 
     .btn-success {
       background: linear-gradient(135deg, #0277bd 0%, #0288d1 100%);
-      box-shadow: 0 3px 10px rgba(2, 136, 209, 0.35);
+      box-shadow: 0 3px 10px rgba(2,136,209,0.35);
     }
 
     .btn-success:hover {
       background: linear-gradient(135deg, #01579b 0%, #0277bd 100%);
-      box-shadow: 0 5px 18px rgba(2, 136, 209, 0.45);
+      box-shadow: 0 5px 18px rgba(2,136,209,0.45);
     }
 
     .btn-warning {
       background: linear-gradient(135deg, #e65100 0%, #f57c00 100%);
-      box-shadow: 0 3px 10px rgba(245, 124, 0, 0.35);
+      box-shadow: 0 3px 10px rgba(245,124,0,0.35);
     }
 
     .btn-warning:hover {
       background: linear-gradient(135deg, #bf360c 0%, #e65100 100%);
-      box-shadow: 0 5px 18px rgba(245, 124, 0, 0.45);
+      box-shadow: 0 5px 18px rgba(245,124,0,0.45);
     }
 
     .btn-sm {
@@ -464,7 +462,7 @@
       text-align: center;
       border: none;
       border-top: 4px solid #43a047;
-      box-shadow: 0 4px 15px rgba(46, 125, 50, 0.12);
+      box-shadow: 0 4px 15px rgba(46,125,50,0.12);
       min-height: 100px;
       display: flex;
       flex-direction: column;
@@ -474,7 +472,7 @@
 
     .stat-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(46, 125, 50, 0.2);
+      box-shadow: 0 8px 25px rgba(46,125,50,0.2);
     }
 
     .stat-card .num {
@@ -528,7 +526,7 @@
       border-color: #43a047;
       color: #1b5e20;
       transform: translateY(-3px);
-      box-shadow: 0 6px 18px rgba(46, 125, 50, 0.18);
+      box-shadow: 0 6px 18px rgba(46,125,50,0.18);
     }
 
     .tab-navigasi button.active {
@@ -536,7 +534,7 @@
       border-color: transparent;
       color: white;
       font-weight: 700;
-      box-shadow: 0 4px 14px rgba(46, 125, 50, 0.35);
+      box-shadow: 0 4px 14px rgba(46,125,50,0.35);
       transform: translateY(-1px);
     }
 
@@ -728,6 +726,90 @@
       }
     }
 
+    /* ===== TABEL DISIPLIN GURU ===== */
+    .disiplin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .disiplin-table th,
+    .disiplin-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #f0f4f0;
+    }
+
+    .disiplin-table th {
+      background: #f5f5f5;
+      font-weight: 600;
+      font-size: 13px;
+      color: #37474f;
+    }
+
+    .disiplin-table tbody tr:hover td {
+      background: #f1f8e9;
+    }
+
+    .disiplin-nama {
+      font-weight: 600;
+      font-size: 14px;
+      color: #212121;
+    }
+
+    .disiplin-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      margin: 2px 0;
+      line-height: 1.5;
+    }
+
+    .disiplin-badge.disiplin-ok {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+    }
+
+    .disiplin-badge.disiplin-warn {
+      background: #fff3e0;
+      color: #e65100;
+      border: 1px solid #ffcc80;
+    }
+
+    .disiplin-detail {
+      font-size: 11px;
+      color: #c62828;
+      margin: 2px 0 4px 2px;
+      line-height: 1.4;
+    }
+
+    /* Di laptop: status di samping (kolom terpisah), mobile status disembunyikan dari kolom */
+    .disiplin-status-mobile {
+      display: none;
+    }
+
+    .disiplin-status-desktop {
+      display: table-cell;
+    }
+
+    /* Di HP: sembunyikan kolom status, tampilkan di bawah nama */
+    @media (max-width: 768px) {
+      .disiplin-status-desktop {
+        display: none !important;
+      }
+
+      .disiplin-status-mobile {
+        display: block;
+        margin-top: 6px;
+      }
+
+      .disiplin-nama-col {
+        padding-bottom: 8px;
+      }
+    }
+
     /* ===== MODAL ===== */
     .modal {
       display: none;
@@ -915,8 +997,7 @@
       .nilai-table input[type="number"] {
         width: 90px !important;
         height: 42px;
-        font-size: 16px !important;
-        /* Mencegah auto-zoom layar pada iPhone/Android */
+        font-size: 16px !important; /* Mencegah auto-zoom layar pada iPhone/Android */
         margin-left: auto;
         display: block;
       }
@@ -1291,22 +1372,22 @@
     // ============ BROWSER CACHE HELPER (5 Menit) ================
     // ============================================================
     const AppCache = {
-      set: function (key, data, ttlMinutes) {
+      set: function(key, data, ttlMinutes) {
         const ttl = (ttlMinutes || 5) * 60 * 1000;
         const item = { data: data, expiry: Date.now() + ttl };
-        try { sessionStorage.setItem('appcache_' + key, JSON.stringify(item)); } catch (e) { /* Abaikan jika sessionStorage penuh */ }
+        try { sessionStorage.setItem('appcache_' + key, JSON.stringify(item)); } catch(e) { /* Abaikan jika sessionStorage penuh */ }
       },
-      get: function (key) {
+      get: function(key) {
         try {
           const raw = sessionStorage.getItem('appcache_' + key);
           if (!raw) return null;
           const item = JSON.parse(raw);
           if (Date.now() > item.expiry) { sessionStorage.removeItem('appcache_' + key); return null; }
           return item.data;
-        } catch (e) { return null; }
+        } catch(e) { return null; }
       },
-      clear: function (key) {
-        try { sessionStorage.removeItem('appcache_' + key); } catch (e) { /* Abaikan */ }
+      clear: function(key) {
+        try { sessionStorage.removeItem('appcache_' + key); } catch(e) { /* Abaikan */ }
       }
     };
 
@@ -1520,9 +1601,9 @@
     document.addEventListener('DOMContentLoaded', function () {
       initializeApp();
       // WARM-UP PING: Bangunkan container GAS di background agar siap saat user klik Login
-      setTimeout(function () {
+      setTimeout(function() {
         fetch(API_URL + '?action=ping', { method: 'GET' })
-          .catch(function () { }); // Abaikan error
+          .catch(function() {}); // Abaikan error
       }, 500);
     });
 
@@ -1791,7 +1872,7 @@
         .withFailureHandler(function (e) {
           listContainer.innerHTML = '<span style="color:red;">Gagal memuat: ' + e + '</span>';
         })
-        .getSiswaAnakWali(App.user.profil.email);
+        .getSiswaAnakWali(App.user.profil.username);
     }
 
     function toggleCheckboxesWali() {
@@ -4675,7 +4756,7 @@
       const tglAkhir = '';
 
       window.prefetchCatatan = window.prefetchCatatan || {};
-
+      
       if (window.prefetchCatatan[page]) {
         const r = window.prefetchCatatan[page];
         tampilkanRiwayatCatatan(r.data, r.total, page);
@@ -5491,7 +5572,7 @@
       const tglAkhir = '';
 
       window.prefetchPelanggaran = window.prefetchPelanggaran || {};
-
+      
       if (window.prefetchPelanggaran[page]) {
         const r = window.prefetchPelanggaran[page];
         tampilkanRiwayatPelanggaran(r.data, r.total, page);
@@ -5729,9 +5810,9 @@
       const kelas = document.getElementById('filterKelasBelumLengkap').value;
       const tbody = document.getElementById('tbodyNilaiBelumLengkap');
       tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Memuat data... ⏳</td></tr>';
-
+      
       google.script.run
-        .withSuccessHandler(function (r) {
+        .withSuccessHandler(function(r) {
           if (r.success) {
             let html = '';
             if (r.data.length === 0) {
@@ -5739,7 +5820,7 @@
             } else {
               r.data.forEach((d, i) => {
                 html += `<tr>
-                  <td>${i + 1}</td>
+                  <td>${i+1}</td>
                   <td>${d.kelas}</td>
                   <td style="text-align:left;">${d.nama}</td>
                   <td style="text-align:left; color:#d32f2f;"><b>${d.mapel}</b>: ${d.nilaiBelum.join(', ')}</td>
@@ -5751,7 +5832,7 @@
             tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Error: ${r.error}</td></tr>`;
           }
         })
-        .withFailureHandler(function (e) {
+        .withFailureHandler(function(e) {
           tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Gagal koneksi: ${e}</td></tr>`;
         })
         .getSiswaNilaiBelumLengkap(App.user.profil.email, kelas);
@@ -5815,9 +5896,9 @@
         <div style="background:#f8f9fa;border:1px solid #e0e0e0;border-radius:10px;padding:20px;margin-bottom:15px;">
           <h5 style="margin:0 0 12px 0;color:#37474f;font-size:15px;">📋 Pilih Aksi Penilaian</h5>
           ${ada
-          ? `<div style="margin-bottom:12px;font-size:13px;color:#555;">Data tersedia: ${chipHtml}</div>`
-          : `<div style="margin-bottom:12px;font-size:13px;color:#999;font-style:italic;">Belum ada data penilaian untuk periode ini.</div>`
-        }
+            ? `<div style="margin-bottom:12px;font-size:13px;color:#555;">Data tersedia: ${chipHtml}</div>`
+            : `<div style="margin-bottom:12px;font-size:13px;color:#999;font-style:italic;">Belum ada data penilaian untuk periode ini.</div>`
+          }
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:${ada ? '12px' : '0'};">
             <button onclick="mulaiInputBaru(${nextNo})" style="background:#2e7d32;color:white;border:none;border-radius:6px;padding:10px 18px;cursor:pointer;font-size:14px;font-weight:bold;">➕ Input Penilaian Baru (ke-${nextNo})</button>
           </div>
@@ -5878,7 +5959,7 @@
         + `Mapel: <b>${mapel}</b><br><br>`
         + `<span style="color:#c62828;">Semua nilai siswa pada penilaian ini akan <b>TERHAPUS PERMANEN</b> dan tidak bisa dikembalikan!</span>`;
 
-      showCustomConfirm(pesan, function () {
+      showCustomConfirm(pesan, function() {
         showLoading(true);
         google.script.run
           .withSuccessHandler(function (r) {
@@ -5951,7 +6032,7 @@
         + `Mapel: <b>${mapel}</b><br>`
         + `Jumlah siswa dinilai: <b>${dataToSave.length} orang</b>`;
 
-      showCustomConfirm(pesan, function () {
+      showCustomConfirm(pesan, function() {
         toggleButtonLoading('#nilaiSimpanBtn', true, '⏳ Menyimpan...');
         google.script.run
           .withSuccessHandler(function (r) {
@@ -6582,7 +6663,7 @@
     function loadJurnalData(page) {
       window.currentJurnalPage = page;
       window.prefetchJurnal = window.prefetchJurnal || {};
-
+      
       if (window.prefetchJurnal[page]) {
         const r = window.prefetchJurnal[page];
         tampilkanRiwayatJurnal(r.data, r.total, page);
@@ -7109,15 +7190,15 @@
         })
         .getLaporanOrangTuaDinamis(nis, kelas, bulan, tahun);
     }
-
+    
     function buildOrtuDashboardHTML(data) {
       const siswa = data.siswa;
-      const absenR = data.absenRealtime || {
-        hariIni: { H: 0, I: 0, S: 0, A: 0, C: 0, T: 0 },
-        mingguIni: { H: 0, I: 0, S: 0, A: 0, C: 0, T: 0 },
-        bulanIni: { H: 0, I: 0, S: 0, A: 0, C: 0, T: 0 }
+      const absenR = data.absenRealtime || { 
+        hariIni: {H:0,I:0,S:0,A:0,C:0,T:0}, 
+        mingguIni: {H:0,I:0,S:0,A:0,C:0,T:0}, 
+        bulanIni: {H:0,I:0,S:0,A:0,C:0,T:0} 
       };
-
+      
       let html = `
       <div style="margin-bottom:20px; padding-bottom:10px; border-bottom:2px solid #2e7d32; display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -7210,7 +7291,7 @@
       <h4 style="margin:0 0 10px 0; color:#333;">Catatan Sikap & Pelanggaran</h4>
       <div class="form-section" style="padding:0; margin-bottom: 20px; overflow:hidden; border:1px solid #eee;">
       `;
-
+      
       if (data.sikap.length === 0) {
         html += `<p style="padding:15px; color:#666; font-size:13px; text-align:center; margin:0;">Belum ada catatan sikap/pelanggaran pada periode ini.</p>`;
       } else {
@@ -7232,9 +7313,9 @@
         });
       }
       html += `</div>`;
-
+      
       html += `<h4 style="margin:0 0 10px 0; color:#333;">Catatan Pembinaan Wali</h4>`;
-
+      
       if (data.wali.length === 0) {
         html += `<div class="form-section" style="padding:15px; margin-bottom: 20px; border:1px solid #eee;">
           <p style="color:#666; font-size:13px; text-align:center; margin:0;">Belum ada catatan pembinaan dari Wali pada periode ini.</p>
@@ -7266,9 +7347,9 @@
         });
         html += `</div>`;
       }
-
+      
       html += `<h4 style="margin:0 0 10px 0; color:#333;">Rekapitulasi Nilai</h4>`;
-
+      
       if (data.nilai.length === 0) {
         html += `<div class="form-section" style="padding:15px; margin-bottom: 20px; border:1px solid #eee;">
           <p style="color:#666; font-size:13px; text-align:center; margin:0;">Belum ada data nilai yang diinput pada periode ini.</p>
@@ -7297,11 +7378,11 @@
         });
         html += `</div>`;
       }
-
+      
       if (data.nilaiBelumLengkap && data.nilaiBelumLengkap.length > 0) {
         let listItems = '';
         data.nilaiBelumLengkap.forEach(item => {
-          listItems += `<li style="margin-bottom: 5px;"><b>${item.mapel}</b>: ${item.missing.join(', ')}</li>`;
+           listItems += `<li style="margin-bottom: 5px;"><b>${item.mapel}</b>: ${item.missing.join(', ')}</li>`;
         });
         html += `
         <div class="form-section" style="padding: 15px; margin-bottom: 20px; border: 1px solid #ffb74d; background-color: #fff3e0; border-radius: 8px;">
@@ -7313,7 +7394,7 @@
         </div>
         `;
       }
-
+      
       return html;
     }
 
@@ -7387,6 +7468,7 @@
             return;
           }
 
+          // === TABEL 1: JADWAL GURU HARI INI ===
           let tableHtml = '';
           if (res.jadwal && res.jadwal.length > 0) {
             tableHtml = `
@@ -7427,17 +7509,91 @@
             </div>`;
           }
 
+          // === TABEL 2: DISIPLIN GURU ===
+          let disiplinHtml = '';
+          const disiplin = res.disiplin || [];
+          if (disiplin.length > 0) {
+            let rowsHtml = '';
+            disiplin.forEach((d, idx) => {
+              // --- Status Badge: Absen ---
+              let absenBadge = '';
+              if (d.absenOke) {
+                absenBadge = `<span class="disiplin-badge disiplin-ok">✅ Absen Oke</span>`;
+              } else {
+                let pesanDetail = '';
+                if (d.pesanAbsenBolong && d.pesanAbsenBolong.length > 0) {
+                  d.pesanAbsenBolong.forEach(p => {
+                    const jamStr = p.jamBolong.join(', ');
+                    pesanDetail += `<div class="disiplin-detail">Absen di Kelas <b>${p.kelas}</b> belum diisi pada jam ${jamStr}</div>`;
+                  });
+                }
+                absenBadge = `<span class="disiplin-badge disiplin-warn">⚠️ Belum Lengkap</span>${pesanDetail}`;
+              }
+
+              // --- Status Badge: Jurnal ---
+              const jurnalBadge = d.jurnalOke
+                ? `<span class="disiplin-badge disiplin-ok">✅ Jurnal Oke</span>`
+                : `<span class="disiplin-badge disiplin-warn">⚠️ Belum membuat jurnal harian</span>`;
+
+              rowsHtml += `
+                <tr>
+                  <td style="text-align:center; width:45px;">${idx + 1}</td>
+                  <td class="disiplin-nama-col">
+                    <div class="disiplin-nama">${d.namaGuru}</div>
+                    <div class="disiplin-status-mobile">
+                      ${absenBadge}
+                      ${jurnalBadge}
+                    </div>
+                  </td>
+                  <td class="disiplin-status-desktop">
+                    ${absenBadge}
+                    ${jurnalBadge}
+                  </td>
+                </tr>
+              `;
+            });
+
+            disiplinHtml = `
+              <div style="background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.05); margin-top:24px;">
+                <h4 style="color:#2e7d32; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
+                  📋 DISIPLIN GURU HARI INI
+                  <span style="font-size:0.85rem; font-weight:normal; background:#e8f5e9; color:#2e7d32; padding:3px 10px; border-radius:20px;">Harian</span>
+                </h4>
+                <div class="table-container" style="overflow-x:auto;">
+                  <table class="disiplin-table">
+                    <thead>
+                      <tr>
+                        <th style="width:45px; text-align:center;">No</th>
+                        <th>Nama Guru</th>
+                        <th class="disiplin-status-desktop">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>${rowsHtml}</tbody>
+                  </table>
+                </div>
+              </div>
+            `;
+          } else if (res.jadwal && res.jadwal.length > 0) {
+            disiplinHtml = `
+              <div style="background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.05); margin-top:24px;">
+                <h4 style="color:#2e7d32; margin-bottom:10px;">📋 DISIPLIN GURU HARI INI</h4>
+                <p style="color:#aaa; font-size:13px;">Data disiplin belum tersedia.</p>
+              </div>`;
+          }
+
           const html = `
             <div class="form-section">
               <h2 style="color:#2e7d32; margin-bottom:10px;">🏠 BERANDA PIMPINAN</h2>
               <h3 style="margin-bottom:20px; font-size:1.8rem;">Selamat datang, ${App.user.profil.nama || '-'}</h3>
-              
+
               <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 30px;">
                 <h4 style="color:#1565c0; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
                   👨‍🏫 GURU MENGAJAR HARI INI <span style="font-size:0.9rem; font-weight:normal; background:#e8f5e9; color:#2e7d32; padding:4px 10px; border-radius:20px;">Hari ${res.hari}</span>
                 </h4>
                 ${tableHtml}
               </div>
+
+              ${disiplinHtml}
             </div>
           `;
 
@@ -7449,6 +7605,7 @@
         })
         .getGuruMengajarHariIni();
     }
+
 
     // ============================================================
     // ============ DASHBOARD PIMPINAN ============================
@@ -7586,7 +7743,7 @@
               else if (s.statusKode === 'I') badgeBg = '#fbc02d';
               else if (s.statusKode === 'C') badgeBg = '#fb8c00';
               else if (s.statusKode === 'T') badgeBg = '#8e24aa';
-
+              
               listTidakHadirHtml += `<li style="margin-bottom:4px;">
                 <b>${s.nama}</b> 
                 <span style="background:${badgeBg}; color:white; padding:1px 6px; border-radius:4px; font-size:10px; font-weight:bold;">${s.statusTeks}</span>
@@ -7664,10 +7821,10 @@
     function loadTop10SiswaTidakHadir(forceRefresh = false) {
       const container = document.getElementById('containerTop10Siswa');
       if (!container) return;
-
+      
       const kelas = document.getElementById('top10KelasFilter')?.value || 'ALL';
       const bulan = document.getElementById('top10BulanFilter')?.value || 'ALL';
-
+      
       const cacheKey = `cache_top10_${kelas}_${bulan}`;
       if (forceRefresh !== true) {
         const cached = AppCache.get(cacheKey);
@@ -7678,7 +7835,7 @@
       }
 
       container.innerHTML = '<p style="text-align:center; color:#666; font-size:13px; padding:15px;">⏳ Memuat data Top 10...</p>';
-
+      
       google.script.run
         .withSuccessHandler(function (r) {
           let outputHtml = '';
@@ -7698,13 +7855,13 @@
               </thead>
               <tbody>
             `;
-
+            
             r.data.forEach((s, idx) => {
               let rankBadge = `${idx + 1}`;
               if (idx === 0) rankBadge = '🥇 1';
               else if (idx === 1) rankBadge = '🥈 2';
               else if (idx === 2) rankBadge = '🥉 3';
-
+              
               const d = s.detail;
               tableHtml += `
               <tr style="border-bottom:1px solid #eee;">
@@ -7722,7 +7879,7 @@
               </tr>
               `;
             });
-
+            
             tableHtml += `</tbody></table>`;
             outputHtml = tableHtml;
           }
