@@ -7131,20 +7131,31 @@
     <div id="ortuPreviewContainer" style="display:none; margin-top:20px;" class="form-section">
       <div id="ortuPreviewContent" style="background:#fff; border:1px solid #ddd; padding:20px; min-height:400px; border-radius:8px;">
       </div>
-      <div class="bottom-button">
+      <div class="bottom-button" style="display:flex; justify-content:center; gap:10px;">
         <button id="btnDownloadOrtu" class="btn btn-warning" onclick="downloadLaporanOrtu()">📥 DOWNLOAD PDF</button>
+        <button class="btn btn-primary" onclick="previewLaporanOrtu(true)">🔄 SEGARKAN DATA</button>
       </div>
     </div>
   `;
       document.getElementById('orang_tua').innerHTML = html;
     }
 
-    function previewLaporanOrtu() {
+    function previewLaporanOrtu(forceRefresh = false) {
       const sel = document.getElementById('ortuChildSelect');
       const nis = sel.value;
       const kelas = sel.options[sel.selectedIndex].getAttribute('data-kelas');
       const bulan = document.getElementById('ortuBulan').value;
       const tahun = document.getElementById('ortuTahun').value;
+
+      const cacheKey = 'ortu_' + nis + '_' + bulan + '_' + tahun;
+      if (forceRefresh !== true) {
+        const cached = AppCache.get(cacheKey);
+        if (cached) {
+          document.getElementById('ortuPreviewContainer').style.display = 'block';
+          document.getElementById('ortuPreviewContent').innerHTML = buildOrtuDashboardHTML(cached);
+          return;
+        }
+      }
 
       const btn = document.getElementById('btnPreviewOrtu');
       if (btn) {
@@ -7174,6 +7185,7 @@
             showLoading(false);
           }
           if (r.success) {
+            AppCache.set(cacheKey, r.data, 10);
             document.getElementById('ortuPreviewContainer').style.display = 'block';
             document.getElementById('ortuPreviewContent').innerHTML = buildOrtuDashboardHTML(r.data);
           } else { showError(r.error); }
@@ -8120,7 +8132,7 @@
               </div>
               <div>
                 <h4 style="margin:0 0 3px 0; color:#333; font-size:14px; line-height:1.2;">${s.nama}</h4>
-                <span style="font-size:11px; color:#666; background:#f5f5f5; padding:2px 6px; border-radius:10px;">NIS: ${s.nis}</span>
+                <span style="font-size:11px; color:#666; background:#f5f5f5; padding:2px 6px; border-radius:10px;">Kelas: ${s.kelas}</span>
               </div>
             </div>
             <div style="text-align:right; background:#ffebee; padding:6px 12px; border-radius:8px; min-width: 70px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
@@ -8200,7 +8212,7 @@
               </div>
               <div>
                 <h4 style="margin:0 0 3px 0; color:#333; font-size:14px; line-height:1.2;">${s.nama}</h4>
-                <span style="font-size:11px; color:#666; background:#f5f5f5; padding:2px 6px; border-radius:10px;">NIS: ${s.nis}</span>
+                <span style="font-size:11px; color:#666; background:#f5f5f5; padding:2px 6px; border-radius:10px;">Kelas: ${s.kelas}</span>
               </div>
             </div>
             <div style="text-align:right; background:${bgClass}; padding:6px 12px; border-radius:8px; min-width: 70px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
