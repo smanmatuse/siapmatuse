@@ -4084,7 +4084,10 @@
       win.document.close();
       win.focus();
 
+      let printed = false;
       const triggerPrint = () => {
+        if (printed) return;
+        printed = true;
         try {
           win.focus();
           win.print();
@@ -4100,6 +4103,7 @@
         win.onload = () => {
           setTimeout(triggerPrint, 500);
         };
+        // Fallback jika event onload gagal ter-trigger
         setTimeout(triggerPrint, 3000);
       }
       return true;
