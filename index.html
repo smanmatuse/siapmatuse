@@ -1788,7 +1788,7 @@
         .withFailureHandler(function (e) {
           listContainer.innerHTML = '<span style="color:red;">Gagal memuat: ' + e + '</span>';
         })
-        .getSiswaAnakWali();
+        .getSiswaAnakWali(App.user.profil.email);
     }
 
     function toggleCheckboxesWali() {
@@ -4651,7 +4651,7 @@
             document.getElementById('catatanElemen').value = '';
             document.getElementById('catatanPoin').value = '0';
             document.getElementById('catatanIsi').value = '';
-            // Optional: reload riwayat nanti
+            window.prefetchCatatan = {};
           } else {
             showError(r.error || 'Gagal menyimpan');
           }
@@ -4668,9 +4668,20 @@
 
     function loadRiwayatCatatan(page) {
       const kelas = document.getElementById('catatanKelas').value || '';
-
       const tglAwal = '';
       const tglAkhir = '';
+
+      window.prefetchCatatan = window.prefetchCatatan || {};
+      
+      if (window.prefetchCatatan[page]) {
+        const r = window.prefetchCatatan[page];
+        tampilkanRiwayatCatatan(r.data, r.total, page);
+        const totalPages = Math.ceil(r.total / CATATAN_PER_PAGE);
+        if (page < totalPages && !window.prefetchCatatan[page + 1]) {
+          google.script.run.withSuccessHandler(res => { if (res.success) window.prefetchCatatan[page + 1] = res; }).getRiwayatCatatanGuru(kelas, tglAwal, tglAkhir, page + 1, CATATAN_PER_PAGE, App.user.profil.email);
+        }
+        return;
+      }
 
       showLoading(true);
 
@@ -4678,7 +4689,12 @@
         .withSuccessHandler(function (r) {
           showLoading(false);
           if (r.success) {
+            window.prefetchCatatan[page] = r;
             tampilkanRiwayatCatatan(r.data, r.total, page);
+            const totalPages = Math.ceil(r.total / CATATAN_PER_PAGE);
+            if (page < totalPages && !window.prefetchCatatan[page + 1]) {
+              google.script.run.withSuccessHandler(res => { if (res.success) window.prefetchCatatan[page + 1] = res; }).getRiwayatCatatanGuru(kelas, tglAwal, tglAkhir, page + 1, CATATAN_PER_PAGE, App.user.profil.email);
+            }
           } else {
             document.getElementById('catatanRiwayatTable').innerHTML = '<p style="text-align:center; padding:20px; color:red;">Gagal memuat riwayat</p>';
             document.getElementById('catatanPagination').style.display = 'none';
@@ -4877,12 +4893,12 @@
       const dataBaru = {
         tanggal: document.getElementById('editTanggalCatatan').value,
         dimensiId: document.getElementById('editElemenCatatan').value,
-        poin: document.getElementById('editPoinCatatan').value ? parseInt(document.getElementById('editPoinCatatan').value) : 0,
+        poin: parseInt(document.getElementById('editPoinCatatan').value) || 0,
         catatan: document.getElementById('editIsiCatatan').value
       };
 
       if (!dataBaru.tanggal || !dataBaru.dimensiId || !dataBaru.catatan) {
-        showError('Tanggal, Elemen, dan Catatan harus diisi!');
+        showError('Tanggal, Elemen, dan Isi Catatan harus diisi!');
         return;
       }
 
@@ -4894,6 +4910,7 @@
           if (r.success) {
             showSuccess('Catatan berhasil diupdate');
             tutupModalEdit();
+            window.prefetchCatatan = {};
             loadRiwayatCatatan(currentCatatanPage);
           } else {
             showError(r.error || 'Gagal mengupdate');
@@ -4916,6 +4933,7 @@
             showLoading(false);
             if (r.success) {
               showSuccess('Catatan berhasil dihapus');
+              window.prefetchCatatan = {};
               loadRiwayatCatatan(currentCatatanPage);
             } else {
               showError(r.error || 'Gagal menghapus');
@@ -5275,6 +5293,7 @@
             document.getElementById('pelanggaranPoin').value = '0';
             document.getElementById('pelanggaranTindakLanjut').value = '';
             // Reload riwayat
+            window.prefetchPelanggaran = {};
             loadRiwayatPelanggaran(1);
           } else {
             showError(r.error || 'Gagal menyimpan');
@@ -5425,6 +5444,7 @@
           if (r.success) {
             showSuccess('Pelanggaran berhasil diupdate');
             tutupModalEditPelanggaran();
+            window.prefetchPelanggaran = {};
             loadRiwayatPelanggaran(currentPelanggaranPage);
           } else {
             showError(r.error || 'Gagal mengupdate');
@@ -5446,6 +5466,7 @@
             showLoading(false);
             if (r.success) {
               showSuccess('Pelanggaran berhasil dihapus');
+              window.prefetchPelanggaran = {};
               loadRiwayatPelanggaran(currentPelanggaranPage);
             } else {
               showError(r.error || 'Gagal menghapus');
@@ -5463,9 +5484,20 @@
     // ============ FUNGSI RIWAYAT PELANGGARAN ============
     function loadRiwayatPelanggaran(page) {
       const kelas = document.getElementById('pelanggaranKelas').value || '';
-
       const tglAwal = '';
       const tglAkhir = '';
+
+      window.prefetchPelanggaran = window.prefetchPelanggaran || {};
+      
+      if (window.prefetchPelanggaran[page]) {
+        const r = window.prefetchPelanggaran[page];
+        tampilkanRiwayatPelanggaran(r.data, r.total, page);
+        const totalPages = Math.ceil(r.total / App.PELANGGARAN_PER_PAGE);
+        if (page < totalPages && !window.prefetchPelanggaran[page + 1]) {
+          google.script.run.withSuccessHandler(res => { if (res.success) window.prefetchPelanggaran[page + 1] = res; }).getRiwayatPelanggaranGuru(kelas, tglAwal, tglAkhir, page + 1, App.PELANGGARAN_PER_PAGE, App.user.profil.email);
+        }
+        return;
+      }
 
       showLoading(true);
 
@@ -5473,7 +5505,12 @@
         .withSuccessHandler(function (r) {
           showLoading(false);
           if (r.success) {
+            window.prefetchPelanggaran[page] = r;
             tampilkanRiwayatPelanggaran(r.data, r.total, page);
+            const totalPages = Math.ceil(r.total / App.PELANGGARAN_PER_PAGE);
+            if (page < totalPages && !window.prefetchPelanggaran[page + 1]) {
+              google.script.run.withSuccessHandler(res => { if (res.success) window.prefetchPelanggaran[page + 1] = res; }).getRiwayatPelanggaranGuru(kelas, tglAwal, tglAkhir, page + 1, App.PELANGGARAN_PER_PAGE, App.user.profil.email);
+            }
           } else {
             document.getElementById('pelanggaranRiwayatTable').innerHTML = '<p style="text-align:center; padding:20px; color:red;">Gagal memuat riwayat</p>';
             document.getElementById('pelanggaranPagination').style.display = 'none';
@@ -6526,6 +6563,7 @@
             document.getElementById('jurnalKeterangan').value = '';
             // Reload data
             window.currentJurnalPage = 1;
+            window.prefetchJurnal = {};
             loadJurnalData(1);
           } else {
             showError(r.error || 'Gagal menyimpan');
@@ -6540,13 +6578,30 @@
 
     function loadJurnalData(page) {
       window.currentJurnalPage = page;
+      window.prefetchJurnal = window.prefetchJurnal || {};
+      
+      if (window.prefetchJurnal[page]) {
+        const r = window.prefetchJurnal[page];
+        tampilkanRiwayatJurnal(r.data, r.total, page);
+        const totalPages = Math.ceil(r.total / JURNAL_PER_PAGE);
+        if (page < totalPages && !window.prefetchJurnal[page + 1]) {
+          google.script.run.withSuccessHandler(res => { if (res.success) window.prefetchJurnal[page + 1] = res; }).getRiwayatJurnal(page + 1, JURNAL_PER_PAGE, App.user.profil.email);
+        }
+        return;
+      }
+
       showLoading(true);
 
       google.script.run
         .withSuccessHandler(function (r) {
           showLoading(false);
           if (r.success) {
+            window.prefetchJurnal[page] = r;
             tampilkanRiwayatJurnal(r.data, r.total, page);
+            const totalPages = Math.ceil(r.total / JURNAL_PER_PAGE);
+            if (page < totalPages && !window.prefetchJurnal[page + 1]) {
+              google.script.run.withSuccessHandler(res => { if (res.success) window.prefetchJurnal[page + 1] = res; }).getRiwayatJurnal(page + 1, JURNAL_PER_PAGE, App.user.profil.email);
+            }
           } else {
             document.getElementById('jurnalRiwayatTable').innerHTML = '<p style="text-align:center; padding:20px; color:red;">Gagal memuat data</p>';
           }
@@ -6640,6 +6695,7 @@
             showLoading(false);
             if (r.success) {
               showSuccess('Jurnal dihapus');
+              window.prefetchJurnal = {};
               loadJurnalData(window.currentJurnalPage);
             } else {
               showError(r.error || 'Gagal menghapus');
@@ -6818,6 +6874,7 @@
           if (r.success) {
             showSuccess('Jurnal diupdate');
             tutupModalEditJurnal();
+            window.prefetchJurnal = {};
             loadJurnalData(window.currentJurnalPage);
           } else {
             showError(r.error || 'Gagal mengupdate');
