@@ -8338,14 +8338,14 @@
     function tampilkanPimpinanBobot(dataBobot, currentKelas, currentBulan) {
       let kelasOptions = '';
       App.config.kelasReguler.forEach(k => {
-        kelasOptions += `<option value="${k}" ${k === currentKelas ? 'selected' : ''}>${k}</option>`;
+        kelasOptions += `<option style="color:#333; background:#fff;" value="${k}" ${k === currentKelas ? 'selected' : ''}>${k}</option>`;
       });
 
       const bulanNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-      let bulanOptions = `<option value="ALL" ${currentBulan === 'ALL' ? 'selected' : ''}>Semua Bulan</option>`;
+      let bulanOptions = `<option style="color:#333; background:#fff;" value="ALL" ${currentBulan === 'ALL' ? 'selected' : ''}>Semua Bulan</option>`;
       bulanNames.forEach((b, idx) => {
         const val = idx + 1;
-        bulanOptions += `<option value="${val}" ${val.toString() === currentBulan ? 'selected' : ''}>${b}</option>`;
+        bulanOptions += `<option style="color:#333; background:#fff;" value="${val}" ${val.toString() === currentBulan ? 'selected' : ''}>${b}</option>`;
       });
 
       let html = `
