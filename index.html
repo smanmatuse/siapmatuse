@@ -7525,6 +7525,8 @@
 
           AppCache.set('dashboardPimpinanBeranda', res, 10);
           tampilkanPimpinanBeranda(res);
+          // Lazy Loading Disiplin Guru
+          loadPimpinanDisiplin(res.jadwal);
         })
         .withFailureHandler(function (err) {
           showLoading(false);
@@ -7575,13 +7577,81 @@
         </div>`;
       }
 
-      // === TABEL 2: DISIPLIN GURU ===
-      let disiplinHtml = '';
-      const disiplin = res.disiplin || [];
-      if (disiplin.length > 0) {
+      // === CONTAINER DISIPLIN GURU ===
+      let disiplinHtml = `
+        <div id="pimpinan_disiplin_container" style="background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.05); margin-top:24px; text-align:center;">
+          <h4 style="color:#2e7d32; margin-bottom:16px; text-align:left;">📋 DISIPLIN GURU HARI INI</h4>
+          <div style="padding: 30px 0;">
+            <div class="spinner" style="margin: 0 auto;"></div>
+            <p style="color:#666; margin-top:15px; font-size:14px;">Menganalisis data disiplin guru...</p>
+          </div>
+        </div>
+      `;
+
+      const html = `
+        <div class="form-section">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
+            <h2 style="color:#2e7d32; margin:0;">🏠 BERANDA PIMPINAN</h2>
+            <button class="btn btn-warning" onclick="renderPimpinanBeranda(true)" style="padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 8px;">🔄 SEGARKAN DATA</button>
+          </div>
+          <h3 style="margin-bottom:20px; font-size:1.8rem;">Selamat datang, ${App.user.profil.nama || '-'}</h3>
+
+          <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 30px;">
+            <h4 style="color:#1565c0; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+              👨‍🏫 GURU MENGAJAR HARI INI <span style="font-size:0.9rem; font-weight:normal; background:#e8f5e9; color:#2e7d32; padding:4px 10px; border-radius:20px;">Hari ${res.hari}</span>
+            </h4>
+            ${tableHtml}
+          </div>
+
+          ${disiplinHtml}
+        </div>
+      `;
+
+      document.getElementById('pimpinan_beranda').innerHTML = html;
+    }
+
+    function loadPimpinanDisiplin(jadwalHariIni) {
+      if (!jadwalHariIni || jadwalHariIni.length === 0) {
+        document.getElementById('pimpinan_disiplin_container').innerHTML = `
+          <h4 style="color:#2e7d32; margin-bottom:10px; text-align:left;">📋 DISIPLIN GURU HARI INI</h4>
+          <p style="color:#aaa; font-size:13px; text-align:left;">Data disiplin belum tersedia.</p>
+        `;
+        return;
+      }
+
+      // Gunakan AppCache jika ada
+      const cachedDisiplin = AppCache.get('dashboardPimpinanDisiplin');
+      if (cachedDisiplin) {
+        renderTabelDisiplin(cachedDisiplin);
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(function (res) {
+          if (res.success) {
+            AppCache.set('dashboardPimpinanDisiplin', res.data, 10);
+            renderTabelDisiplin(res.data);
+          } else {
+            document.getElementById('pimpinan_disiplin_container').innerHTML = '<p style="color:red;">Error memuat disiplin: ' + res.error + '</p>';
+          }
+        })
+        .withFailureHandler(function (err) {
+          document.getElementById('pimpinan_disiplin_container').innerHTML = '<p style="color:red;">Koneksi gagal: ' + err + '</p>';
+        })
+        .getDisiplinGuruHariIni(jadwalHariIni);
+    }
+
+    function renderTabelDisiplin(disiplin) {
+      let html = `
+        <h4 style="color:#2e7d32; margin-bottom:16px; display:flex; align-items:center; gap:10px; text-align:left;">
+          📋 DISIPLIN GURU HARI INI
+          <span style="font-size:0.85rem; font-weight:normal; background:#e8f5e9; color:#2e7d32; padding:3px 10px; border-radius:20px;">Harian</span>
+        </h4>
+      `;
+
+      if (disiplin && disiplin.length > 0) {
         let rowsHtml = '';
         disiplin.forEach((d, idx) => {
-          // --- Status Badge: Absen ---
           let absenBadge = '';
           if (d.absenOke) {
             absenBadge = `<span class="disiplin-badge disiplin-ok">✅ Absen Oke</span>`;
@@ -7596,7 +7666,6 @@
             absenBadge = `<span class="disiplin-badge disiplin-warn">⚠️ Belum Lengkap</span>${pesanDetail}`;
           }
 
-          // --- Status Badge: Jurnal ---
           const jurnalBadge = d.jurnalOke
             ? `<span class="disiplin-badge disiplin-ok">✅ Jurnal Oke</span>`
             : `<span class="disiplin-badge disiplin-warn">⚠️ Belum membuat jurnal harian</span>`;
@@ -7619,54 +7688,29 @@
           `;
         });
 
-        disiplinHtml = `
-          <div style="background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.05); margin-top:24px;">
-            <h4 style="color:#2e7d32; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
-              📋 DISIPLIN GURU HARI INI
-              <span style="font-size:0.85rem; font-weight:normal; background:#e8f5e9; color:#2e7d32; padding:3px 10px; border-radius:20px;">Harian</span>
-            </h4>
-            <div class="table-container" style="overflow-x:auto;">
-              <table class="disiplin-table">
-                <thead>
-                  <tr>
-                    <th style="width:45px; text-align:center;">No</th>
-                    <th>Nama Guru</th>
-                    <th class="disiplin-status-desktop">Status</th>
-                  </tr>
-                </thead>
-                <tbody>${rowsHtml}</tbody>
-              </table>
-            </div>
+        html += `
+          <div class="table-container" style="overflow-x:auto;">
+            <table class="disiplin-table">
+              <thead>
+                <tr>
+                  <th style="width:45px; text-align:center;">No</th>
+                  <th>Nama Guru</th>
+                  <th class="disiplin-status-desktop">Status</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
           </div>
         `;
-      } else if (res.jadwal && res.jadwal.length > 0) {
-        disiplinHtml = `
-          <div style="background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.05); margin-top:24px;">
-            <h4 style="color:#2e7d32; margin-bottom:10px;">📋 DISIPLIN GURU HARI INI</h4>
-            <p style="color:#aaa; font-size:13px;">Data disiplin belum tersedia.</p>
-          </div>`;
+      } else {
+        html += `<p style="color:#aaa; font-size:13px; text-align:left;">Data disiplin belum tersedia.</p>`;
       }
 
-      const html = `
-        <div class="form-section">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
-            <h2 style="color:#2e7d32; margin:0;">🏠 BERANDA PIMPINAN</h2>
-            <button class="btn btn-warning" onclick="renderPimpinanBeranda(true)" style="padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 8px;">🔄 SEGARKAN DATA</button>
-          </div>
-          <h3 style="margin-bottom:20px; font-size:1.8rem;">Selamat datang, ${App.user.profil.nama || '-'}</h3>
-
-          <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 30px;">
-            <h4 style="color:#1565c0; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
-              👨‍🏫 GURU MENGAJAR HARI INI <span style="font-size:0.9rem; font-weight:normal; background:#e8f5e9; color:#2e7d32; padding:4px 10px; border-radius:20px;">Hari ${res.hari}</span>
-            </h4>
-            ${tableHtml}
-          </div>
-
-          ${disiplinHtml}
-        </div>
-      `;
-
-      document.getElementById('pimpinan_beranda').innerHTML = html;
+      const container = document.getElementById('pimpinan_disiplin_container');
+      if (container) {
+        container.innerHTML = html;
+        container.style.textAlign = 'left';
+      }
     }
 
 
