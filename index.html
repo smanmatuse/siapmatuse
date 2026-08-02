@@ -4018,6 +4018,12 @@
     <h4>🛡️ LAPORAN PEMBINAAN WALI</h4>
     <div class="filter-laporan">
       <div class="form-group">
+        <label>Tahun</label>
+        <select id="lapWaliTahun" onchange="loadSiswaWali()">
+          ${tahunOptions}
+        </select>
+      </div>
+      <div class="form-group">
         <label>Bulan</label>
         <select id="lapWaliBulan">
           <option value="semua">Semua Bulan</option>
@@ -4025,9 +4031,9 @@
         </select>
       </div>
       <div class="form-group">
-        <label>Tahun</label>
-        <select id="lapWaliTahun">
-          ${tahunOptions}
+        <label>Nama Siswa</label>
+        <select id="lapWaliSiswa">
+          <option value="semua">⏳ Memuat daftar siswa...</option>
         </select>
       </div>
       <div class="form-group">
@@ -4074,6 +4080,10 @@
 
       document.getElementById('laporan').innerHTML = html;
       loadEkskulDropdownLaporan();
+      // Muat siswa wali secara otomatis jika tab wali aktif
+      if (App.currentLaporanTab === 'wali') {
+        setTimeout(loadSiswaWali, 100);
+      }
     }
 
     function switchLaporanTab(tab) {
@@ -7057,9 +7067,40 @@
     // ============================================================
     // ============ FUNGSI LAPORAN WALI ============================
     // ============================================================
-    function downloadLaporanWali() {
-      const bulan = document.getElementById('lapWaliBulan')?.value;
+
+    // Muat daftar siswa binaan guru wali ke dropdown filter
+    function loadSiswaWali() {
       const tahun = document.getElementById('lapWaliTahun')?.value;
+      const sel = document.getElementById('lapWaliSiswa');
+      if (!tahun || !sel) return;
+
+      sel.innerHTML = '<option value="semua">⏳ Memuat...</option>';
+      sel.disabled = true;
+
+      google.script.run
+        .withSuccessHandler(function (r) {
+          sel.disabled = false;
+          if (r.success && r.siswa.length > 0) {
+            let opts = '<option value="semua">👥 Semua Siswa</option>';
+            r.siswa.forEach(s => {
+              opts += `<option value="${s.nis}">${s.nama} (${s.kelas})</option>`;
+            });
+            sel.innerHTML = opts;
+          } else {
+            sel.innerHTML = '<option value="semua">👥 Semua Siswa</option>';
+          }
+        })
+        .withFailureHandler(function () {
+          sel.disabled = false;
+          sel.innerHTML = '<option value="semua">👥 Semua Siswa</option>';
+        })
+        .getSiswaListByWali(App.user.profil.email, tahun);
+    }
+
+    function downloadLaporanWali() {
+      const bulan  = document.getElementById('lapWaliBulan')?.value;
+      const tahun  = document.getElementById('lapWaliTahun')?.value;
+      const nis    = document.getElementById('lapWaliSiswa')?.value || 'semua';
 
       if (!bulan || !tahun) return;
 
@@ -7106,7 +7147,7 @@
           }
           showError('Gagal: ' + e);
         })
-        .downloadLaporanWaliPdf(bulan, tahun, App.user.profil.email);
+        .downloadLaporanWaliPdf(bulan, tahun, App.user.profil.email, nis);
     }
 
     // ============================================================
