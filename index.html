@@ -7115,9 +7115,8 @@
 
     // Muat daftar siswa binaan guru wali ke dropdown filter
     function loadSiswaWali() {
-      const tahun = document.getElementById('lapWaliTahun')?.value;
       const sel = document.getElementById('lapWaliSiswa');
-      if (!tahun || !sel) return;
+      if (!sel) return;
 
       sel.innerHTML = '<option value="semua">⏳ Memuat...</option>';
       sel.disabled = true;
@@ -7139,7 +7138,7 @@
           sel.disabled = false;
           sel.innerHTML = '<option value="semua">👥 Semua Siswa</option>';
         })
-        .getSiswaListByWali(App.user.profil.email, tahun);
+        .getSiswaListByWali(App.user.profil.email);
     }
 
     function downloadLaporanWali() {
@@ -7154,43 +7153,50 @@
         btn.disabled = true;
         btn.innerHTML = '⏳ MENYIAPKAN...';
       } else {
-        showLoading(true, 'Sedang menyiapkan laporan wali, mohon tunggu (maksimal 3 menit)...');
+        showLoading(true, 'Sedang menyiapkan laporan wali...');
       }
 
       const timeoutId = setTimeout(() => {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = '📥 DOWNLOAD PDF';
-        } else {
-          showLoading(false);
-        }
+        if (btn) { btn.disabled = false; btn.innerHTML = '📥 DOWNLOAD PDF'; }
+        else { showLoading(false); }
         showError('Permintaan waktu habis (Timeout). Data mungkin terlalu besar atau koneksi lambat.');
       }, 180000);
 
       google.script.run
         .withSuccessHandler(function (r) {
           clearTimeout(timeoutId);
-          if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = '📥 DOWNLOAD PDF';
-          } else {
-            showLoading(false);
-          }
-          if (r.success) {
-            openReportAndPrint(r.html);
-          } else {
+          if (btn) { btn.disabled = false; btn.innerHTML = '📥 DOWNLOAD PDF'; }
+          else { showLoading(false); }
+
+          if (!r.success) {
             showError(r.error || 'Gagal membuat laporan');
+            return;
+          }
+
+          // Gunakan Blob URL agar tidak bergantung pada window.open + document.write
+          // yang rentan terhadap popup blocker dan error koneksi GAS
+          try {
+            const blob = new Blob([r.html], { type: 'text/html; charset=utf-8' });
+            const url  = URL.createObjectURL(blob);
+            const win  = window.open(url, '_blank');
+            if (!win) {
+              showError('Pop-up diblokir oleh browser. Mohon izinkan pop-up untuk situs ini.');
+              URL.revokeObjectURL(url);
+              return;
+            }
+            // Bersihkan Blob URL setelah 60 detik
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+          } catch (blobErr) {
+            // Fallback ke metode lama jika Blob tidak didukung
+            openReportAndPrint(r.html);
           }
         })
         .withFailureHandler(function (e) {
           clearTimeout(timeoutId);
-          if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = '📥 DOWNLOAD PDF';
-          } else {
-            showLoading(false);
-          }
-          showError('Gagal: ' + e);
+          if (btn) { btn.disabled = false; btn.innerHTML = '📥 DOWNLOAD PDF'; }
+          else { showLoading(false); }
+          showError('Gagal membuat laporan wali. Silakan coba lagi.');
+          console.error('[Laporan Wali] Error:', e);
         })
         .downloadLaporanWaliPdf(bulan, tahun, App.user.profil.email, nis);
     }
