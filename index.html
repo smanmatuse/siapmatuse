@@ -2245,6 +2245,7 @@
         const cached = AppCache.get(cacheKey);
         if (cached) {
           tampilkanBerandaGuru(cached);
+          loadJadwalGuru(); // Muat jadwal (dari AppCache atau GAS, background)
           return;
         }
       }
@@ -2260,6 +2261,7 @@
           }
           AppCache.set(cacheKey, r, 10);
           tampilkanBerandaGuru(r);
+          loadJadwalGuru(); // Muat jadwal setelah statistik tampil
         })
         .withFailureHandler(function (e) {
           showLoading(false);
@@ -2286,57 +2288,100 @@
         statistikHtml = '<p>Belum ada kelas yang diajar</p>';
       }
 
-      // Buat Jadwal HTML
-      let jadwalHtml = '';
-      if (r.jadwal && r.jadwal.length > 0) {
-        const hariIniStr = new Date().toLocaleDateString('id-ID', { weekday: 'long' }).toLowerCase();
-        jadwalHtml = `
-          <h4 style="color:#2e7d32; margin:30px 0 10px;">🗓️ JADWAL MENGAJAR SAYA</h4>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Hari</th>
-                  <th>Jam</th>
-                  <th>Kelas</th>
-                  <th>Mata Pelajaran</th>
-                </tr>
-              </thead>
-              <tbody>
-        `;
-        r.jadwal.forEach(j => {
-          const isHariIni = j.hari.toLowerCase() === hariIniStr;
-          const rowStyle = isHariIni ? 'background-color: #e8f5e9; font-weight: bold; border-left: 4px solid #2e7d32;' : '';
-          jadwalHtml += `
-                <tr style="${rowStyle}">
-                  <td>${j.hari} ${isHariIni ? '<span style="color:#2e7d32; font-size:0.8em; margin-left:5px;">(Hari Ini)</span>' : ''}</td>
-                  <td>${j.jam}</td>
-                  <td>${j.kelas}</td>
-                  <td>${j.mapel}</td>
-                </tr>
-          `;
-        });
-        jadwalHtml += `
-              </tbody>
-            </table>
-          </div>
-        `;
-      }
-
-      // Tampilkan beranda dengan ucapan selamat datang dan nama guru
+      // Tampilkan beranda dengan placeholder jadwal
       const html = `
         <div class="form-section">
           <h2 style="color:#2e7d32; margin-bottom:10px;">👋 SELAMAT DATANG</h2>
           <h3 style="margin-bottom:20px; font-size:1.8rem;">${r.nama || App.guruData.nama || '-'}</h3>
-          
+
           <h4 style="color:#2e7d32; margin:20px 0 10px;">📊 STATISTIK SISWA</h4>
           ${statistikHtml}
-          
-          ${jadwalHtml}
+
+          <h4 style="color:#2e7d32; margin:30px 0 10px;">🗓️ JADWAL MENGAJAR SAYA</h4>
+          <div id="jadwalSection" style="padding:12px 0;">
+            <p style="color:#888; font-size:13px;">⏳ Memuat jadwal mengajar...</p>
+          </div>
         </div>
       `;
 
       document.getElementById('beranda').innerHTML = html;
+    }
+
+    // =============================================================
+    // Lazy load jadwal — berjalan di background, aman saat pindah menu
+    // =============================================================
+    function loadJadwalGuru() {
+      const email    = App.user.email;
+      const cacheKey = 'jadwal_guru_' + email;
+      const cached   = AppCache.get(cacheKey);
+
+      if (cached !== null && cached !== undefined) {
+        // Data sudah ada di AppCache — render langsung
+        renderJadwalDom(cached);
+        return;
+      }
+
+      // Tidak ada di cache — panggil GAS (berjalan background, tidak block UI)
+      google.script.run
+        .withSuccessHandler(function (r) {
+          if (r && r.success) {
+            // SELALU simpan ke AppCache terlebih dahulu
+            // (berlaku meski user sudah pindah menu — akan dipakai saat kembali ke beranda)
+            AppCache.set(cacheKey, r.jadwal, 60); // Cache 60 menit
+            renderJadwalDom(r.jadwal);
+          } else {
+            // Jadwal gagal dimuat — tampilkan pesan kecil, jangan overlay error
+            const el = document.getElementById('jadwalSection');
+            if (el) el.innerHTML = '<p style="color:#aaa; font-size:13px;">⚠️ Jadwal tidak dapat dimuat saat ini.</p>';
+          }
+        })
+        .withFailureHandler(function (e) {
+          // Silent fail — tidak tampilkan overlay error agar tidak mengganggu
+          console.warn('[Jadwal] Gagal:', e);
+          const el = document.getElementById('jadwalSection');
+          if (el) el.innerHTML = '<p style="color:#aaa; font-size:13px;">⚠️ Jadwal tidak dapat dimuat saat ini.</p>';
+        })
+        .getJadwalGuru(email);
+    }
+
+    function renderJadwalDom(jadwal) {
+      const el = document.getElementById('jadwalSection');
+      if (!el) return; // User sudah pindah menu — data sudah di AppCache, tidak apa-apa
+
+      if (!jadwal || jadwal.length === 0) {
+        el.innerHTML = '<p style="color:#888; font-size:13px;">Tidak ada jadwal mengajar yang ditemukan.</p>';
+        return;
+      }
+
+      const hariIniStr = new Date().toLocaleDateString('id-ID', { weekday: 'long' }).toLowerCase();
+      let html = `
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Hari</th><th>Jam Ke-</th><th>Kelas</th><th>Mata Pelajaran</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      jadwal.forEach(j => {
+        const isHariIni = j.hari.toLowerCase() === hariIniStr;
+        const rowStyle  = isHariIni ? 'background:#e8f5e9; font-weight:bold; border-left:4px solid #2e7d32;' : '';
+        html += `
+          <tr style="${rowStyle}">
+            <td>${j.hari}${isHariIni ? ' <span style="color:#2e7d32; font-size:0.75em;">(Hari Ini)</span>' : ''}</td>
+            <td style="text-align:center;">${j.jam}</td>
+            <td>${j.kelas}</td>
+            <td>${j.mapel}</td>
+          </tr>
+        `;
+      });
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+      el.innerHTML = html;
     }
 
     // ============================================================
